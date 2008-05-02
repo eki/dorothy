@@ -126,3 +126,25 @@ void z_rtrue( zmachine *zm ) {
   p_ret( zm, 1 );
 }
 
+/*
+ * z_nop, no operation.
+ *
+ *      no zargs used
+ *
+ */
+
+void z_nop( zmachine *zm ) {
+  /* Do Nothing */
+}
+
+/*
+ * z_quit, stop game and exit interpreter.
+ *
+ *      no zargs used
+ *
+ */
+
+void z_quit( zmachine *zm ) {
+  zm->finished = 9999;
+}
+

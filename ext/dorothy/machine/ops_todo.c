@@ -133,10 +133,6 @@ void z_move_window( zmachine *zm ) {
 
 }
 
-void z_nop( zmachine *zm ) {
-
-}
-
 void z_output_stream( zmachine *zm ) {
 
 }
@@ -178,10 +174,6 @@ void z_put_prop( zmachine *zm ) {
 }
 
 void z_put_wind_prop( zmachine *zm ) {
-
-}
-
-void z_quit( zmachine *zm ) {
 
 }
 

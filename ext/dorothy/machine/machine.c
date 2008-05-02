@@ -17,6 +17,7 @@ VALUE machine_alloc( VALUE klass ) {
 
 VALUE machine_initialize( VALUE self, VALUE filename ) {
   VALUE header;
+  long i;
   char *fn = StringValuePtr( filename );
   FILE *fp;
   zmachine *zm;
@@ -62,6 +63,11 @@ VALUE machine_initialize( VALUE self, VALUE filename ) {
   }
 
   fclose( fp );
+
+  zm->program_checksum = 0;
+  for( i = 64; i < zm->program_length; i++ ) {
+    zm->program_checksum += zm->program[i];
+  }
 
   zm->finished = 0;
 

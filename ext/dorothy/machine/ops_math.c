@@ -42,14 +42,6 @@ void z_art_shift( zmachine *zm ) {
   }
 }
 
-void z_dec( zmachine *zm ) {
-
-}
-
-void z_dec_chk( zmachine *zm ) {
-
-}
-
 /*
  * z_div, signed 16bit division.
  *
@@ -66,13 +58,57 @@ void z_div( zmachine *zm ) {
   p_store( zm, (zword) ((short) zm->zargs[0] / (short) zm->zargs[1]) );
 }
 
-void z_inc( zmachine *zm ) {
+/*
+ * z_je, branch if the first value equals any of the following.
+ *
+ *      zargs[0] = first value
+ *      zargs[1] = second value (optional)
+ *      ...
+ *      zargs[3] = fourth value (optional)
+ *
+ */
 
+void z_je( zmachine *zm ) {
+  p_branch( zm, (zm->zargc > 1 && (zm->zargs[0] == zm->zargs[1])) ||
+                (zm->zargc > 2 && (zm->zargs[0] == zm->zargs[2])) ||
+                (zm->zargc > 3 && (zm->zargs[0] == zm->zargs[3])) );
 }
 
-void z_inc_chk( zmachine *zm ) {
+/*
+ * z_jg, branch if the first value is greater than the second.
+ *
+ *      zargs[0] = first value
+ *      zargs[1] = second value
+ *
+ */
 
+void z_jg( zmachine *zm ) {
+  p_branch( zm, (short) zm->zargs[0] > (short) zm->zargs[1] );
 }
+
+/*
+ * z_jl, branch if the first value is less than the second.
+ *
+ *      zargs[0] = first value
+ *      zargs[1] = second value
+ *
+ */
+
+void z_jl( zmachine *zm ) {
+  p_branch( zm, (short) zm->zargs[0] < (short) zm->zargs[1] );
+}
+
+/*
+ * z_jz, branch if value is zero.
+ *
+ *      zargs[0] = value
+ *
+ */
+
+void z_jz( zmachine *zm ) {
+  p_branch( zm, (short) zm->zargs[0] == 0 );
+}
+
 
 /*
  * z_log_shift, logical SHIFT operation.
@@ -158,7 +194,15 @@ void z_sub( zmachine *zm ) {
   p_store( zm, (zword) ((short) zm->zargs[0] - (short) zm->zargs[1]) );
 }
 
-void z_test( zmachine *zm ) {
+/*
+ * z_test, branch if all the flags of a bit mask are set in a value.
+ *
+ *      zargs[0] = value to be examined
+ *      zargs[1] = bit mask
+ *
+ */
 
+void z_test( zmachine *zm ) {
+  p_branch( zm, (zm->zargs[0] & zm->zargs[1]) == zm->zargs[1] );
 }
 

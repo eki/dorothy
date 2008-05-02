@@ -98,9 +98,6 @@ void p_step( zmachine *zm ) {
 
   } 
   else {
-    zbyte specifier1;
-    zbyte specifier2;
-
     if (opcode == 0xec || opcode == 0xfa) { 
       load_all_operands( zm, *zm->pcp++ );
       load_all_operands( zm, *zm->pcp++ );
@@ -315,5 +312,59 @@ void p_ret( zmachine *zm, zword value ) {
     zm->finished++;
   }
   */
+}
+
+/*
+ * branch
+ *
+ * Take a jump after an instruction based on the flag, either true or
+ * false. The branch can be short or long; it is encoded in one or two
+ * bytes respectively. When bit 7 of the first byte is set, the jump
+ * takes place if the flag is true; otherwise it is taken if the flag
+ * is false. When bit 6 of the first byte is set, the branch is short;
+ * otherwise it is long. The offset occupies the bottom 6 bits of the
+ * first byte plus all the bits in the second byte for long branches.
+ * Uniquely, an offset of 0 means return false, and an offset of 1 is
+ * return true.
+ *
+ */
+
+void p_branch( zmachine *zm, bool flag ) {
+  long pc;
+  zword offset;
+  zbyte off1;
+  zbyte off2;
+  zbyte specifier = *zm->pcp++;
+
+  off1 = specifier & 0x3f;
+
+  if( !flag ) {
+    specifier ^= 0x80;
+  }
+
+  if( ! (specifier & 0x40) ) {             /* it's a long branch */
+
+    if( off1 & 0x20 ) {                    /* propagate sign bit */
+      off1 |= 0xc0;
+    }
+
+    off2 = *zm->pcp++;
+    offset = (off1 << 8) | off2;
+
+  } 
+  else {
+    offset = off1;                         /* it's a short branch */
+  }
+
+  if (specifier & 0x80) {
+
+    if (offset > 1) {                      /* normal branch */
+      pc = PC(zm) + ((short) offset - 2);
+      zm->pcp = zm->program + pc;
+    } 
+    else {
+      p_ret( zm, offset );                 /* special case, return 0 or 1 */
+    }
+  }
 }
 

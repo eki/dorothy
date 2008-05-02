@@ -405,6 +405,7 @@ typedef void (*z_op)( zmachine * );
 
 struct smachine {
   long program_length;
+  zword program_checksum;
   
   zbyte *program;
   zbyte *pcp;
@@ -496,6 +497,11 @@ void p_store( zmachine *zm, zword value );
 
 void p_call( zmachine *zm, zword routine, int argc, zword *args, int ct );
 void p_ret( zmachine *zm, zword value );
+
+void p_branch( zmachine *zm, bool flag );
+
+void storew( zmachine *zm, zaddr addr, zword value );
+void storeb( zmachine *zm, zaddr addr, zbyte value );
 
 /* Ops */
 

@@ -5,23 +5,11 @@ void z_buffer_mode( zmachine *zm ) {
 
 }
 
-void z_catch( zmachine *zm ) {
-
-}
-
-void z_check_arg_count( zmachine *zm ) {
-
-}
-
 void z_check_unicode( zmachine *zm ) {
 
 }
 
 void z_clear_attr( zmachine *zm ) {
-
-}
-
-void z_copy_table( zmachine *zm ) {
 
 }
 
@@ -97,27 +85,7 @@ void z_insert_obj( zmachine *zm ) {
 
 }
 
-void z_je( zmachine *zm ) {
-
-}
-
-void z_jg( zmachine *zm ) {
-
-}
-
 void z_jin( zmachine *zm ) {
-
-}
-
-void z_jl( zmachine *zm ) {
-
-}
-
-void z_jump( zmachine *zm ) {
-
-}
-
-void z_jz( zmachine *zm ) {
 
 }
 
@@ -142,30 +110,6 @@ void z_picture_data( zmachine *zm ) {
 }
 
 void z_picture_table( zmachine *zm ) {
-
-}
-
-void z_piracy( zmachine *zm ) {
-
-}
-
-void z_pop( zmachine *zm ) {
-
-}
-
-void z_pop_stack( zmachine *zm ) {
-
-}
-
-void z_pull( zmachine *zm ) {
-
-}
-
-void z_push( zmachine *zm ) {
-
-}
-
-void z_push_stack( zmachine *zm ) {
 
 }
 
@@ -210,10 +154,6 @@ void z_save( zmachine *zm ) {
 }
 
 void z_save_undo( zmachine *zm ) {
-
-}
-
-void z_scan_table( zmachine *zm ) {
 
 }
 
@@ -265,15 +205,7 @@ void z_test_attr( zmachine *zm ) {
 
 }
 
-void z_throw( zmachine *zm ) {
-
-}
-
 void z_tokenise( zmachine *zm ) {
-
-}
-
-void z_verify( zmachine *zm ) {
 
 }
 

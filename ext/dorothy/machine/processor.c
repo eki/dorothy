@@ -271,3 +271,49 @@ zword p_load( zmachine *zm ) {
   return value;
 }
 
+/*
+ * ret
+ *
+ * Return from the current subroutine and restore the previous stack
+ * frame. The result may be stored (0), thrown away (1) or pushed on
+ * the stack (2). In the latter case a direct call has been finished
+ * and we must exit the interpreter loop.
+ *
+ */
+
+void p_ret( zmachine *zm, zword value ) {
+  long pc;
+  int ct;
+
+  if( zm->sp > zm->fp ) {
+    runtime_error( "stack underflow" );
+  }
+
+  zm->sp = zm->fp;
+
+  ct = *zm->sp++ >> 12;
+  zm->frame_count--;
+  zm->fp = zm->stack + 1 + *zm->sp++;
+  pc = *zm->sp++;
+  pc = ((long) *zm->sp++ << 9) | pc;
+
+  zm->pcp = zm->program + pc;
+
+  /* Handle resulting value */
+
+  if( ct == 0 ) {
+    p_store( zm, value );
+  }
+
+  if( ct == 2 ) {
+    *--zm->sp = value;
+  }
+
+  /* Stop main loop for direct calls */
+  /*
+  if( ct == 2 ) {
+    zm->finished++;
+  }
+  */
+}
+

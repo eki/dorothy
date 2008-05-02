@@ -82,19 +82,47 @@ void z_store( zmachine *zm ) {
   }
 }
 
-void z_ret( zmachine *zm ) {
+/*
+ * z_ret, return from a subroutine with the given value.
+ *
+ *      zargs[0] = value to return
+ *
+ */
 
+void z_ret( zmachine *zm ) {
+  p_ret( zm, zm->zargs[0] );
 }
+
+/*
+ * z_ret_popped, return from a subroutine with a value popped off the stack.
+ *
+ *      no zargs used
+ *
+ */
 
 void z_ret_popped( zmachine *zm ) {
-
+  p_ret( zm, *zm->sp++ );
 }
+
+/*
+ * z_rfalse, return from a subroutine with false (0).
+ *
+ *      no zargs used
+ *
+ */
 
 void z_rfalse( zmachine *zm ) {
-
+  p_ret( zm, 0 );
 }
 
-void z_rtrue( zmachine *zm ) {
+/*
+ * z_rtrue, return from a subroutine with true (1).
+ *
+ *      no zargs used
+ *
+ */
 
+void z_rtrue( zmachine *zm ) {
+  p_ret( zm, 1 );
 }
 

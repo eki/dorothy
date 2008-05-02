@@ -487,7 +487,10 @@ void h_set_standard_minor( zmachine *zm, int n );
 /** Processor related functions.  **/
 
 void p_step( zmachine *zm );
+zword p_load_global( zmachine *zm, zbyte variable );
+void p_store_global( zmachine *zm, zbyte variable, zword value );
 void p_store( zmachine *zm, zword value );
+zword p_load( zmachine *zm );
 void p_call( zmachine *zm, zword routine, int argc, zword *args, int ct );
 
 /* Ops */

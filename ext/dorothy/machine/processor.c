@@ -204,22 +204,27 @@ void p_call( zmachine *zm, zword routine, int argc, zword *args, int ct ) {
 }
 
 /*
- * z_call_s, call a subroutine and store its result.
+ * p_store_global
  *
- *      zargs[0] = packed address of subroutine
- *      zargs[1] = first argument (optional)
- *      ...
- *      zargs[7] = seventh argument (optional)
+ * Store a value to a global variable.
  *
  */
 
-void z_call_s( zmachine *zm ) {   
-  if( zm->zargs[0] != 0 ) {
-    p_call( zm, zm->zargs[0], zm->zargc - 1, zm->zargs + 1, 0 );
-  }
-  else {
-    p_store( zm, 0 );
-  }
+void p_store_global( zmachine *zm, zbyte variable, zword value ) {
+  zword addr = h_globals(zm) + 2 * (variable - 16);
+  write_word( zm, addr, value );
+}
+
+/*
+ * p_load_global
+ *
+ * Fetch a value from a global variable.
+ *
+ */
+
+zword p_load_global( zmachine *zm, zbyte variable ) {
+  zword addr = h_globals(zm) + 2 * (variable - 16);
+  return read_word( zm, addr );
 }
 
 /*
@@ -239,8 +244,7 @@ void p_store( zmachine *zm, zword value ) {
     *(zm->fp - variable) = value;
   }
   else {
-    zword addr = h_globals(zm) + 2 * (variable - 16);
-    write_word( zm, addr, value );
+    p_store_global( zm, variable, value );
   }
 }
 
@@ -261,8 +265,7 @@ zword p_load( zmachine *zm ) {
     value = *(zm->fp - variable);
   }
   else {
-    zword addr = h_globals(zm) + 2 * (variable - 16);
-    value = read_word( zm, addr );
+    value = p_load_global( zm, variable );
   }
 
   return value;

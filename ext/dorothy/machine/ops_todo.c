@@ -5,10 +5,6 @@ void z_buffer_mode( zmachine *zm ) {
 
 }
 
-void z_call_n( zmachine *zm ) {
-
-}
-
 void z_catch( zmachine *zm ) {
 
 }
@@ -125,18 +121,6 @@ void z_jz( zmachine *zm ) {
 
 }
 
-void z_load( zmachine *zm ) {
-
-}
-
-void z_loadb( zmachine *zm ) {
-
-}
-
-void z_loadw( zmachine *zm ) {
-
-}
-
 void z_make_menu( zmachine *zm ) {
 
 }
@@ -229,22 +213,6 @@ void z_restore_undo( zmachine *zm ) {
 
 }
 
-void z_ret( zmachine *zm ) {
-
-}
-
-void z_ret_popped( zmachine *zm ) {
-
-}
-
-void z_rfalse( zmachine *zm ) {
-
-}
-
-void z_rtrue( zmachine *zm ) {
-
-}
-
 void z_save( zmachine *zm ) {
 
 }
@@ -298,18 +266,6 @@ void z_sound_effect( zmachine *zm ) {
 }
 
 void z_split_window( zmachine *zm ) {
-
-}
-
-void z_store( zmachine *zm ) {
-
-}
-
-void z_storeb( zmachine *zm ) {
-
-}
-
-void z_storew( zmachine *zm ) {
 
 }
 

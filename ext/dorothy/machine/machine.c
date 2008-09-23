@@ -498,12 +498,20 @@ static zchar alphabet( zmachine *zm, int set, int index ) {
 
 VALUE machine_read_string( VALUE self, VALUE a ) {
   zmachine *zm;
-  zaddr addr = (zaddr) NUM2UINT(a);
+  Data_Get_Struct( self, zmachine, zm );
+
+  long addr = NUM2LONG(a);
+  bool consume = FALSE;
   int limit;
 
-  printf( "read_string called with addr (%d)\n", addr );
-
-  Data_Get_Struct( self, zmachine, zm );
+  if( addr > 0 ) {
+    printf( "read_string called with addr (%d)\n", addr );
+  }
+  else if( addr == -1 ) {
+    addr = PC(zm);
+    consume = TRUE;
+    printf( "read_string called with PC (%d)\n", addr );
+  }
 
   int version = h_version( zm );
   zaddr abbreviations = h_abbreviations_table( zm );
@@ -521,11 +529,14 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
   int status = 0;
 
   VALUE str = rb_str_new2( "" );
-
   do {
     int i;
     w = read_word( zm, addr );
     addr += 2;
+
+    if( consume ) {
+      zm->pcp += 2;
+    }
 
     printf( "  raw word: %x\n", w );
 
@@ -590,11 +601,11 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
         case 1:
 
           a_addr = abbreviations + (32 * (last_c - 1) + *c) * 2;
-          a_addr = read_word( zm, a_addr );  /* ???? */
+          a_addr = read_word( zm, a_addr ); 
 
           printf( "recursing to look up abbreviation (%d)\n", a_addr );
 
-          a_str = machine_read_string( self, UINT2NUM(a_addr) );
+          a_str = machine_read_string( self, INT2NUM((long) a_addr) );
           rb_str_append( str, a_str );
 
           status = 0;

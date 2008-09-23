@@ -12,7 +12,7 @@ static void load_operand( zmachine *zm, zbyte type ) {
   zword value;
 
   if( type & 2 ) {                   /* variable */
-    value = load( zm );
+    value = p_load( zm );
   } 
   else if( type & 1 ) {              /* small constant */
     value = *zm->pcp++;
@@ -62,7 +62,9 @@ void p_step( zmachine *zm ) {
       return;
     }
   }
-
+  else if( zm->finished == 9999 ) {
+    return;
+  }
 
   zbyte opcode = *zm->pcp++;
 
@@ -73,7 +75,7 @@ void p_step( zmachine *zm ) {
     load_operand( zm, (zbyte) (opcode & 0x40) ? 2 : 1 );
     load_operand( zm, (zbyte) (opcode & 0x20) ? 2 : 1 );
 
-    printf( "  (a) (var:%d) Executing %s", (opcode & 0x1f), 
+    printf( "  (a) (var:%d) Executing %s\n", (opcode & 0x1f), 
             zm->var_opcode_names[opcode & 0x1f] );
 
     zm->var_opcodes[opcode & 0x1f]( zm );
@@ -83,7 +85,7 @@ void p_step( zmachine *zm ) {
 
     load_operand( zm, (zbyte) (opcode >> 4) );
 
-    printf( "  (op1:%d) Executing %s", (opcode & 0x0f),
+    printf( "  (op1:%d) Executing %s\n", (opcode & 0x0f),
             zm->op1_opcode_names[opcode & 0x0f] );
 
     zm->op1_opcodes[opcode & 0x0f]( zm );
@@ -91,7 +93,7 @@ void p_step( zmachine *zm ) {
   } 
   else if( opcode < 0xc0 ) {
 
-    printf( "  (op0:%d) Executing %s", (opcode - 0xb0),
+    printf( "  (op0:%d) Executing %s\n", (opcode - 0xb0),
             zm->op0_opcode_names[opcode - 0xb0] );
 
     zm->op0_opcodes[opcode - 0xb0]( zm );
@@ -106,7 +108,7 @@ void p_step( zmachine *zm ) {
       load_all_operands( zm, *zm->pcp++ );
     }
 
-    printf( "  (b) (var:%d) Executing %s", (opcode - 0xc0),
+    printf( "  (b) (var:%d) Executing %s\n", (opcode - 0xc0),
             zm->var_opcode_names[opcode - 0xc0] );
 
     zm->var_opcodes[opcode - 0xc0]( zm );
@@ -208,7 +210,7 @@ void p_call( zmachine *zm, zword routine, int argc, zword *args, int ct ) {
  */
 
 void p_store_global( zmachine *zm, zbyte variable, zword value ) {
-  zword addr = h_globals(zm) + 2 * (variable - 16);
+  zword addr = h_global_table(zm) + 2 * (variable - 16);
   write_word( zm, addr, value );
 }
 
@@ -220,7 +222,7 @@ void p_store_global( zmachine *zm, zbyte variable, zword value ) {
  */
 
 zword p_load_global( zmachine *zm, zbyte variable ) {
-  zword addr = h_globals(zm) + 2 * (variable - 16);
+  zword addr = h_global_table(zm) + 2 * (variable - 16);
   return read_word( zm, addr );
 }
 

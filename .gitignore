@@ -1,0 +1,7 @@
+.*.swp
+Makefile
+*~
+*.o
+*.so
+*.z5
+*.z3

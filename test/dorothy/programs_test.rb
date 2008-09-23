@@ -38,16 +38,29 @@ class TestPrograms < Test::Unit::TestCase
 
   def __test_program( filename, expected_output )
     m = Machine.new( filename )
-    
-    m.step until m.finished?
 
-    assert_equal( expected_output.length, m.output.length, 
-                  "output doesn't have the expected length" )
+    i = 0
+   
+    until m.finished? 
+      m.step while m.output.empty? && ! m.finished?
 
-    expected_output.length.times do |i|
-      assert_equal( expected_output[i], m.output[i],
-                    "output (#{i}) doesn't match expected output" )
+      while s = m.output.shift
+
+        assert( i < expected_output.length, "unexpected output #{s}, " +
+                "only expecting #{expected_output.length} tokens.  " +
+                "Trace: \n#{m.trace.join}" )
+
+        assert_equal( expected_output[i], s, 
+                      "output (#{i}) doesn't match expected.  Trace: \n" + 
+                      m.trace.join )
+
+        i += 1
+      end
     end
+
+    assert_equal( expected_output.length, i,
+                  "expected #{expected_output.length} output tokens, " +
+                  "received #{i}.  Trace: \n#{m.trace.join}" )
   end
 
 end

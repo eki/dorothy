@@ -46,6 +46,7 @@ VALUE machine_initialize( VALUE self, VALUE filename ) {
                    rb_class_new_instance( 1, &self, Dictionary ) );
 
   rb_iv_set( self, "@output", rb_ary_new() );
+  rb_iv_set( self, "@trace", rb_ary_new() );
 
   /* Set the actual program length (don't trust the program header) */
 
@@ -486,7 +487,7 @@ static zchar alphabet( zmachine *zm, int set, int index ) {
   zaddr alphabet = h_alphabet_table( zm );
 
   if( alphabet != 0 ) {      /* game uses its own alphabet */
-      printf( "Game uses its own alphabet!\n" );
+      trace( zm, "Game uses its own alphabet!\n" );
       zbyte c = read_byte( zm, alphabet + set * 26 + index );
       return translate_from_zscii( zm, c );
 
@@ -517,12 +518,12 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
   int limit;
 
   if( addr > 0 ) {
-    printf( "read_string called with addr (%d)\n", addr );
+    trace( zm, "read_string called with addr (%d)\n", addr );
   }
   else if( addr == -1 ) {
     addr = PC(zm);
     consume = TRUE;
-    printf( "read_string called with PC (%d)\n", addr );
+    trace( zm, "read_string called with PC (%d)\n", addr );
   }
 
   int version = h_version( zm );
@@ -550,55 +551,55 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
       zm->pcp += 2;
     }
 
-    printf( "  raw word: %x\n", w );
+    trace( zm, "  raw word: %x\n", w );
 
     for( i = 10; i >= 0; i -= 5 ) {
       *c = (w >> i) & 0x1f;
 
-      printf( "  raw c: %2d    ", *c );
+      trace( zm, "  raw c: %2d    ", *c );
 
       switch( status ) {
         case 0:
           if( shift_state == 2 && *c == 6 ) {
             status = 2;
 
-            printf( "  status 2\n" );
+            trace( zm, "  status 2\n" );
           }
           else if( version == V1 && *c == 1 ) {
             *c = '\n';
             rb_str_append( str, rb_str_new2( c ) );
 
-            printf( "  (newline) read c: %s\n", c ); 
+            trace( zm, "  (newline) read c: %s\n", c ); 
           }
           else if( version >= V2 && shift_state == 2 && *c == 7 ) {
             *c = '\n';
             rb_str_append( str, rb_str_new2( c ) );
 
-            printf( "  (newline) read c: %s\n", c ); 
+            trace( zm, "  (newline) read c: %s\n", c ); 
           }
           else if( *c >= 6 ) {
             *c = alphabet( zm, shift_state, *c - 6 );
             rb_str_append( str, rb_str_new2( c ) );
 
-            printf( "  (alpha) read c: %s\n", c ); 
+            trace( zm, "  (alpha) read c: %s\n", c ); 
           }
           else if( *c == 0 ) {
             *c = ' ';
             rb_str_append( str, rb_str_new2( c ) );
 
-            printf( "  (space) read c: %s\n", c ); 
+            trace( zm, "  (space) read c: %s\n", c ); 
           }
           else if( (version >= V2 && *c == 1) ||
                    (version >= V3 && *c <= 3) ) {
 
             status = 1;
 
-            printf( "status 1\n" );
+            trace( zm, "status 1\n" );
           }
           else {
              shift_state = (shift_lock + (*c & 1) + 1) % 3;
 
-             printf( "  shift_state %d\n", shift_state );
+             trace( zm, "  shift_state %d\n", shift_state );
 
              if( version <= V2 && *c >= 4 ) {
                shift_lock = shift_state;
@@ -615,7 +616,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
           a_addr = abbreviations + (32 * (last_c - 1) + *c) * 2;
           a_addr = read_word( zm, a_addr ); 
 
-          printf( "recursing to look up abbreviation (%d)\n", a_addr );
+          trace( zm, "recursing to look up abbreviation (%d)\n", a_addr );
 
           a_str = machine_read_string( self, INT2NUM((long) a_addr) );
           rb_str_append( str, a_str );
@@ -625,7 +626,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
 
         case 2:
 
-          printf( "  status 3\n" );
+          trace( zm, "  status 3\n" );
           status = 3;
           break;
 
@@ -634,7 +635,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
           *c = translate_from_zscii( zm, (zbyte) ((last_c << 5) | *c) );
           rb_str_append( str, rb_str_new2( c ) );
 
-          printf( "  (10bit) read c: %s\n", c ); 
+          trace( zm, "  (10bit) read c: %s\n", c ); 
 
           status = 0;
           break;
@@ -647,7 +648,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
   }
   while( !(w & 0x8000) );
 
-  printf( "returing str\n" );
+  trace( zm, "returing str\n" );
 
   return str;
 }

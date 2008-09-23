@@ -161,6 +161,11 @@
 #define print_cstr(zm,str) (rb_ary_push( m_output( zm ), rb_str_new2( str ) ))
 #define print_rstr(zm,str) (rb_ary_push( m_output( zm ), str ))
 
+#define m_trace(zm) (rb_iv_get( zm->self, "@trace" ))
+#define trace(zm,fmt,...)  { char * buf = ALLOC_N( char, 255 );  \
+                             sprintf( buf, fmt, ##__VA_ARGS__ ); \
+                             rb_ary_push( m_trace(zm), rb_str_new2( buf ) ); }
+
 /*** Access data from the header of the program running. */
 /***    These are higher-level functions, intended to extract info from
    *    the header, not individual zbytes and zwords.

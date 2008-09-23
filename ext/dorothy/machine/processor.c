@@ -55,7 +55,7 @@ void p_step( zmachine *zm ) {
   if( zm->finished == 0 ) {
     if( h_version(zm) != V6 ) {
       zm->pcp = zm->program + h_initial_program_counter(zm);
-      printf( "first step (pc:%d)\n", PC(zm) );
+      trace( zm, "first step (pc:%d)\n", PC(zm) );
     } 
     else {
       p_call( zm, h_start_pc(zm), 0, NULL, 0 );
@@ -75,8 +75,8 @@ void p_step( zmachine *zm ) {
     load_operand( zm, (zbyte) (opcode & 0x40) ? 2 : 1 );
     load_operand( zm, (zbyte) (opcode & 0x20) ? 2 : 1 );
 
-    printf( "  (a) (var:%d) Executing %s\n", (opcode & 0x1f), 
-            zm->var_opcode_names[opcode & 0x1f] );
+    trace( zm, "  (a) (var:%d) Executing %s\n", (opcode & 0x1f),
+           zm->var_opcode_names[opcode & 0x1f] );
 
     zm->var_opcodes[opcode & 0x1f]( zm );
 
@@ -85,16 +85,16 @@ void p_step( zmachine *zm ) {
 
     load_operand( zm, (zbyte) (opcode >> 4) );
 
-    printf( "  (op1:%d) Executing %s\n", (opcode & 0x0f),
-            zm->op1_opcode_names[opcode & 0x0f] );
+    trace( zm, "  (op1:%d) Executing %s\n", (opcode & 0x0f),
+           zm->op1_opcode_names[opcode & 0x0f] );
 
     zm->op1_opcodes[opcode & 0x0f]( zm );
 
   } 
   else if( opcode < 0xc0 ) {
 
-    printf( "  (op0:%d) Executing %s\n", (opcode - 0xb0),
-            zm->op0_opcode_names[opcode - 0xb0] );
+    trace( zm, "  (op0:%d) Executing %s\n", (opcode - 0xb0),
+           zm->op0_opcode_names[opcode - 0xb0] );
 
     zm->op0_opcodes[opcode - 0xb0]( zm );
 
@@ -108,8 +108,8 @@ void p_step( zmachine *zm ) {
       load_all_operands( zm, *zm->pcp++ );
     }
 
-    printf( "  (b) (var:%d) Executing %s\n", (opcode - 0xc0),
-            zm->var_opcode_names[opcode - 0xc0] );
+    trace( zm, "  (b) (var:%d) Executing %s\n", (opcode - 0xc0),
+           zm->var_opcode_names[opcode - 0xc0] );
 
     zm->var_opcodes[opcode - 0xc0]( zm );
   }

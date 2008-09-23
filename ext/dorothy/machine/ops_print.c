@@ -12,8 +12,15 @@ void z_new_line( zmachine *zm ) {
   print_cstr( zm, "\n" );
 }
 
-void z_print( zmachine *zm ) {
+/*
+ * z_print, print a string embedded in the instruction stream.
+ *
+ *      no zargs used
+ *
+ */
 
+void z_print( zmachine *zm ) {
+  print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) -1) ) );
 }
 
 /*
@@ -24,7 +31,8 @@ void z_print( zmachine *zm ) {
  */
 
 void z_print_addr( zmachine *zm ) {
-  print_rstr( zm, machine_read_string( zm->self, UINT2NUM(zm->zargs[0]) ) );
+  print_rstr( zm, 
+              machine_read_string( zm->self, LONG2NUM((long) zm->zargs[0]) ) );
 }
 
 /*

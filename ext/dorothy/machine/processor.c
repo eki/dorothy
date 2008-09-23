@@ -62,7 +62,7 @@ void p_step( zmachine *zm ) {
       return;
     }
   }
-  else if( zm->finished == 9999 ) {
+  else if( zm->finished >= 9999 ) {
     return;
   }
 

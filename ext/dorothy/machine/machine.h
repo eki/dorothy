@@ -262,6 +262,7 @@ VALUE machine_read_byte( VALUE self, VALUE addr );
 VALUE machine_read_word( VALUE self, VALUE addr );
 VALUE machine_read_string( VALUE self, VALUE addr );
 VALUE machine_step( VALUE self );
+VALUE machine_finished( VALUE self );
 void  machine_free( void * );
 
 VALUE header_version( VALUE self );

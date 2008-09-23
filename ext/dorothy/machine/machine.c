@@ -380,6 +380,18 @@ VALUE machine_step( VALUE self ) {
   return self;
 }
 
+/*
+ *  Has the program finished running?
+ */
+
+VALUE machine_finished( VALUE self ) {
+  zmachine *zm;
+
+  Data_Get_Struct( self, zmachine, zm );
+
+  return zm->finished >= 9999 ? Qtrue : Qfalse;
+}
+
 VALUE machine_read_byte( VALUE self, VALUE addr ) {
   zmachine *zm;
   zaddr a = (zaddr) NUM2INT(addr);

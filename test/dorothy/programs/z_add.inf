@@ -1,0 +1,12 @@
+[main x;
+@add 2 3 -> x;
+@print_num x;
+@add x x -> x;
+@print_num x;
+];
+
+! output:
+! ---
+! - 5
+! - 10
+

@@ -9,7 +9,7 @@ include FileUtils
 ### cleanup tasks
 ###
 
-CLEAN.include( 'ext/**/*.o', 'ext/**/*.so' )
+CLEAN.include( 'ext/**/*.o', 'ext/**/*.so', 'test/**/*.z5' )
 
 ###
 ### task to compile the extension
@@ -25,4 +25,20 @@ end
 ###
 
 task :default => [:clean, :compile]
+
+###
+### compile the test programs
+###
+
+desc "compile the test programs"
+task :compile_test_programs do
+  Dir['test/dorothy/programs/*.inf'].each do |f|
+    sh %{cd test/dorothy/programs && inform #{File.basename( f )}}
+  end
+end
+
+Rake::TestTask.new do |t|
+  t.libs << "test" << "ext"
+  t.test_files = FileList['test/**/*_test.rb']
+end
 

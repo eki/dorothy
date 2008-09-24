@@ -70,8 +70,17 @@ void z_print_paddr( zmachine *zm ) {
 
 }
 
-void z_print_ret( zmachine *zm ) {
+/*
+ * z_print_ret, print the string at PC, print newline then return true.
+ *
+ *      no zargs used
+ *
+ */
 
+void z_print_ret( zmachine *zm ) {
+  print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) -1) ) );
+  print_cstr( zm, "\n" );
+  p_ret( zm, 1 );
 }
 
 void z_print_table( zmachine *zm ) {

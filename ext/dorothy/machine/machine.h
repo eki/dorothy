@@ -270,6 +270,17 @@
 #define obj_sibling(zm,n) (obj_addr(zm,n) + obj_sibling_offset(zm))
 #define obj_child(zm,n) (obj_addr(zm,n) + obj_child_offset(zm))
 
+#define obj_attr(zm,n,a) \
+  (read_byte( zm, obj_addr(zm,n) + (a)/8 ) & (0x80 >> ((a) & 7)))
+
+#define obj_set_attr(zm,n,a) \
+  (write_byte( zm, obj_addr(zm,n) + (a)/8, \
+    read_byte( zm, obj_addr(zm,n) + (a)/8 ) | (0x80 >> ((a) & 7)) ))
+
+#define obj_clear_attr(zm,n,a) \
+  (write_byte( zm, obj_addr(zm,n) + (a)/8, \
+    read_byte( zm, obj_addr(zm,n) + (a)/8 ) & ~(0x80 >> ((a) & 7)) ))
+
 /*
  *  Ruby access into the interpreter.
  */

@@ -79,8 +79,24 @@ void obj_unlink( zmachine *zm, zword n ) {
 
 }
 
-void z_clear_attr( zmachine *zm ) {
+/*
+ * z_clear_attr, clear an object attribute.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = number of attribute to be cleared
+ *
+ */
 
+void z_clear_attr( zmachine *zm ) {
+  if( zm->zargs[1] > obj_max_attr(zm) ) {
+    runtime_error( "Illegal attribute number" );
+  }
+
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Illegal object number" );
+  }
+
+  obj_clear_attr( zm, zm->zargs[0], zm->zargs[1] );
 }
 
 /*
@@ -155,11 +171,35 @@ void z_remove_obj( zmachine *zm ) {
   obj_unlink( zm, zm->zargs[0] );
 }
 
-void z_set_attr( zmachine *zm ) {
+/*
+ * z_set_attr, set an object attribute.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = number of attribute to set
+ *
+ */
 
+void z_set_attr( zmachine *zm ) {
+  if( zm->zargs[1] > obj_max_attr(zm) ) {
+    runtime_error( "Illegal attribute number" );
+  }
+
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Illegal object number" );
+  }
+
+  obj_set_attr( zm, zm->zargs[0], zm->zargs[1] );
 }
 
-void z_test_attr( zmachine *zm ) {
+/*
+ * z_test_attr, branch if an object attribute is set.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = number of attribute to test
+ *
+ */
 
+void z_test_attr( zmachine *zm ) {
+  p_branch( zm, obj_attr( zm, zm->zargs[0], zm->zargs[1] ) );
 }
 

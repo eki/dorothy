@@ -1,23 +1,96 @@
 
 #include "machine.h"
 
-zaddr obj_next_prop_addr( zmachine *zm, zaddr prop ) {
-  zbyte offset = read_byte( zm, prop );
-  prop++;
+/*
+ *  Given the address of an object's property ID, parse out the size of the
+ *  property DATA.  NOTE:  The given address isn't the address of the 
+ *  property's DATA.
+ */
+
+zaddr obj_prop_data_size( zmachine *zm, zaddr prop ) {
+  zbyte size = read_byte( zm, prop );
 
   if( h_version(zm) < 4 ) {
-    offset >>= 5;
+    size = (size >> 5) + 1;
   }
-  else if( !(offset & 0x80) ) {
-    offset >>= 6;
+  else if( !(size & 0x80) ) {
+    size = (size >> 6) + 1;
   }
   else {
-    offset = read_byte( zm, prop ) & 0x3f;
-    offset = offset == 0 ? 64 : offset;
+    size = read_byte( zm, prop+1 ) & obj_prop_mask(zm);
+    size = size == 0 ? 64 : size;
   }
 
-  return prop + offset + 1;
+  return size;
 }
+
+/*
+ *  Given the address of an object's property ID, parse out the size of the
+ *  entire property block (ID+DATA).
+ */
+
+zaddr obj_prop_size( zmachine *zm, zaddr prop ) {
+  if( h_version(zm) < 4 ) {
+    return obj_prop_data_size( zm, prop ) + 1;
+  }
+  else {
+    zbyte size = read_byte( zm, prop );
+    
+    return obj_prop_data_size( zm, prop ) + ((size & 0x80) ? 2 : 1);
+  }
+}
+
+/*
+ *  Given the address of an object's property ID, return the address of the
+ *  next property's ID.
+ */
+
+zaddr obj_next_prop_addr( zmachine *zm, zaddr prop ) {
+  return prop + obj_prop_size( zm, prop );
+}
+
+/*
+ *  Given the address of an object's property ID, return the property's 
+ *  number.
+ */
+
+zword obj_prop_number( zmachine *zm, zaddr prop ) {
+  return read_byte( zm, prop ) & obj_prop_mask(zm);
+}
+
+/*
+ *  Find the address of property number n of the given object.  The returned
+ *  address points at the start of the property ID, not the DATA.  If the
+ *  property address couldn't be found 0 is returned.  This function doesn't
+ *  do any error checking... bad things could happen if given an illegal
+ *  object number.
+ */
+
+zaddr obj_find_prop_number( zmachine *zm, zword n, zword pn ) {
+  zaddr prop_addr = obj_first_prop_addr( zm, n );
+  zword last;
+
+  while( (last = obj_prop_number( zm, prop_addr )) > pn ) {
+    prop_addr = obj_next_prop_addr( zm, prop_addr );
+  }
+
+  return last == pn ? prop_addr : 0;
+}
+
+/*
+ *  Given the address of a property, return the address of the property's
+ *  DATA.  The data is offset 1 or 2 bytes depending on version / property
+ *  format.
+ */
+
+zaddr obj_prop_data_addr( zmachine *zm, zaddr prop ) {
+  if( h_version(zm) > 3 && (read_byte( zm, prop ) & 0x80) ) {
+    prop++;
+  }
+
+  return prop + 1;
+}
+
 
 void obj_set_parent( zmachine *zm, zword n, zword pn ) {
   if( h_version(zm) < 4 ) {
@@ -110,8 +183,37 @@ void z_get_child( zmachine *zm ) {
   p_store( zm, obj_child( zm, zm->zargs[0] ) );
 }
 
-void z_get_next_prop( zmachine *zm ) {
+/*
+ * z_get_next_prop, store the number of the first or next property.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = address of current property (0 gets the first property)
+ *
+ */
 
+void z_get_next_prop( zmachine *zm ) {
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Attempt to get next prop of illegal object" );
+  }
+
+  zaddr prop_addr = obj_first_prop_addr( zm, zm->zargs[0] );
+
+  if( zm->zargs[1] != 0 ) {
+    zword last_number;
+
+    do {
+
+      last_number = obj_prop_number( zm, prop_addr );
+      prop_addr = obj_next_prop_addr( zm, prop_addr );
+
+    } while( last_number > zm->zargs[1] );
+
+    if( last_number != zm->zargs[1] ) {
+      runtime_error( "Next property does not exist" );
+    }
+  }
+
+  p_store( zm, obj_prop_number( zm, prop_addr ) );
 }
 
 /*
@@ -125,16 +227,74 @@ void z_get_parent( zmachine *zm ) {
   p_store( zm, obj_parent( zm, zm->zargs[0] ) );
 }
 
-void z_get_prop( zmachine *zm ) {
+/*
+ * z_get_prop, store the value of an object property.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = number of property to be examined
+ *
+ */
 
+void z_get_prop( zmachine *zm ) {
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Attempt to get next prop of illegal object" );
+  }
+  
+  zaddr prop_addr = obj_find_prop_number( zm, zm->zargs[0], zm->zargs[1] );
+  zword value;
+
+  if( prop_addr == 0 ) {
+    value = obj_default_prop( zm, zm->zargs[1] );
+  }
+  else {
+    zword size = obj_prop_data_size( zm, prop_addr );
+
+    if( size == 1 ) {
+      value = read_byte( zm, obj_prop_data_addr( zm, prop_addr ) );
+    }
+    else if( size == 2 ) {
+      value = read_word( zm, obj_prop_data_addr( zm, prop_addr ) );
+    }
+    else {
+      runtime_error( "Illegal call to get_prop, property size > 2" );
+    }
+  }
+
+  p_store( zm, value );
 }
+
+/*
+ * z_get_prop_addr, store the address of an object property.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = number of property to be examined
+ *
+ */
 
 void z_get_prop_addr( zmachine *zm ) {
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Attempt to get next prop of illegal object" );
+  }
 
+  zaddr prop_addr = obj_find_prop_number( zm, zm->zargs[0], zm->zargs[1] );
+
+  if( prop_addr == 0 ) {
+    p_store( zm, 0 );
+  }
+  else {
+    p_store( zm, obj_prop_data_addr( zm, prop_addr ) );
+  }
 }
 
-void z_get_prop_len( zmachine *zm ) {
+/*
+ * z_get_prop_len, store the length of an object property.
+ *
+ *      zargs[0] = address of property to be examined
+ *
+ */
 
+void z_get_prop_len( zmachine *zm ) {
+  p_store( zm, obj_prop_size( zm, zm->zargs[0] - 1 ) );
 }
 
 /*
@@ -194,8 +354,38 @@ void z_jin( zmachine *zm ) {
   p_branch( zm, obj_parent( zm, zm->zargs[0] ) == zm->zargs[1] );
 }
 
-void z_put_prop( zmachine *zm ) {
+/*
+ * z_put_prop, set the value of an object property.
+ *
+ *      zargs[0] = object
+ *      zargs[1] = number of property to set
+ *      zargs[2] = value to set property to
+ *
+ */
 
+void z_put_prop( zmachine *zm ) {
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Attempt to get next prop of illegal object" );
+  }
+  
+  zaddr prop_addr = obj_find_prop_number( zm, zm->zargs[0], zm->zargs[1] );
+
+  if( prop_addr == 0 ) {
+    runtime_error( "Attempt to write to nonexistant property" );
+  }
+  else {
+    zword size = obj_prop_data_size( zm, prop_addr );
+
+    if( size == 1 ) {
+      write_byte( zm, obj_prop_data_addr( zm, prop_addr ), zm->zargs[2] );
+    }
+    else if( size == 2 ) {
+      write_word( zm, obj_prop_data_addr( zm, prop_addr ), zm->zargs[2] );
+    }
+    else {
+      runtime_error( "Illegal call to put_prop, property size > 2" );
+    }
+  }
 }
 
 /*

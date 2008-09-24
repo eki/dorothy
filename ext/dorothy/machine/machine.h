@@ -251,6 +251,7 @@
 #define obj_sibling_offset(zm) (h_version(zm) < 4 ? 5 : 8)
 #define obj_child_offset(zm) (h_version(zm) < 4 ? 6 : 10)
 #define obj_prop_offset(zm) (h_version(zm) < 4 ? 7 : 12)
+#define obj_prop_mask(zm) (h_version(zm) < 4 ? 0x1f : 0x3f)
 #define obj_size(zm) (h_version(zm) < 4 ? 9 : 14)
 #define obj_defaults_offset(zm) (h_version(zm) < 4 ? 62 : 126)
 
@@ -265,6 +266,9 @@
 
 #define obj_first_prop_addr(zm,n) \
   (obj_name_addr(zm,n) + 1 + 2 * obj_name_size(zm,n))
+
+#define obj_default_prop(zm,n) \
+  (read_word( zm, h_object_table(zm) + ((n) - 1) * 2 ))
 
 #define obj_parent(zm,n) (obj_addr(zm,n) + obj_parent_offset(zm))
 #define obj_sibling(zm,n) (obj_addr(zm,n) + obj_sibling_offset(zm))

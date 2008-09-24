@@ -29,10 +29,11 @@ class TestPrograms < Test::Unit::TestCase
 
     expected_output = YAML::load( output_yaml ) if output_yaml
 
-    define_method( tm ) do
-      __test_program( zf, expected_output )
+    if expected_output
+      define_method( tm ) do
+        __test_program( zf, expected_output )
+      end
     end
-
   end
 
 

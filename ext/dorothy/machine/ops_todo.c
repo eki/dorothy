@@ -85,10 +85,6 @@ void z_insert_obj( zmachine *zm ) {
 
 }
 
-void z_jin( zmachine *zm ) {
-
-}
-
 void z_make_menu( zmachine *zm ) {
 
 }

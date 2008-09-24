@@ -9,10 +9,6 @@ void z_check_unicode( zmachine *zm ) {
 
 }
 
-void z_clear_attr( zmachine *zm ) {
-
-}
-
 void z_draw_picture( zmachine *zm ) {
 
 }
@@ -37,35 +33,7 @@ void z_extended( zmachine *zm ) {
 
 }
 
-void z_get_child( zmachine *zm ) {
-
-}
-
 void z_get_cursor( zmachine *zm ) {
-
-}
-
-void z_get_next_prop( zmachine *zm ) {
-
-}
-
-void z_get_parent( zmachine *zm ) {
-
-}
-
-void z_get_prop( zmachine *zm ) {
-
-}
-
-void z_get_prop_addr( zmachine *zm ) {
-
-}
-
-void z_get_prop_len( zmachine *zm ) {
-
-}
-
-void z_get_sibling( zmachine *zm ) {
 
 }
 
@@ -78,10 +46,6 @@ void z_illegal( zmachine *zm ) {
 }
 
 void z_input_stream( zmachine *zm ) {
-
-}
-
-void z_insert_obj( zmachine *zm ) {
 
 }
 
@@ -109,10 +73,6 @@ void z_picture_table( zmachine *zm ) {
 
 }
 
-void z_put_prop( zmachine *zm ) {
-
-}
-
 void z_put_wind_prop( zmachine *zm ) {
 
 }
@@ -126,10 +86,6 @@ void z_read_char( zmachine *zm ) {
 }
 
 void z_read_mouse( zmachine *zm ) {
-
-}
-
-void z_remove_obj( zmachine *zm ) {
 
 }
 
@@ -154,10 +110,6 @@ void z_save_undo( zmachine *zm ) {
 }
 
 void z_scroll_window( zmachine *zm ) {
-
-}
-
-void z_set_attr( zmachine *zm ) {
 
 }
 
@@ -194,10 +146,6 @@ void z_sound_effect( zmachine *zm ) {
 }
 
 void z_split_window( zmachine *zm ) {
-
-}
-
-void z_test_attr( zmachine *zm ) {
 
 }
 

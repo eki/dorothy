@@ -244,7 +244,31 @@
   (read_word( zm, h_dictionary( zm ) + 1 + dict_num_word_separators( zm ) + 1 ))
 
 #define runtime_error(s) \
-    (rb_raise( rb_eRuntimeError, "Error running program: %s", s ))
+  (rb_raise( rb_eRuntimeError, "Error running program: %s", s ))
+
+#define obj_max_objects(zm) (h_version(zm) < 4 ? 255 : 65535)
+#define obj_parent_offset(zm) (h_version(zm) < 4 ? 4 : 6)
+#define obj_sibling_offset(zm) (h_version(zm) < 4 ? 5 : 8)
+#define obj_child_offset(zm) (h_version(zm) < 4 ? 6 : 10)
+#define obj_prop_offset(zm) (h_version(zm) < 4 ? 7 : 12)
+#define obj_size(zm) (h_version(zm) < 4 ? 9 : 14)
+#define obj_defaults_offset(zm) (h_version(zm) < 4 ? 62 : 126)
+
+#define obj_addr(zm,n) \
+  (h_object_table(zm) + (n-1) * obj_size(zm) + obj_defaults_offset(zm))
+
+#define obj_name_addr(zm,n) \
+  (read_word( zm, obj_addr(zm,n) + obj_prop_offset(zm) ))
+
+#define obj_name_size(zm,n) \
+  (read_byte( zm, obj_name_addr(zm,n) ))
+
+#define obj_first_prop_addr(zm,n) \
+  (obj_name_addr(zm,n) + 1 + 2 * obj_name_size(zm,n))
+
+#define obj_parent(zm,n) (obj_addr(zm,n) + obj_parent_offset(zm))
+#define obj_sibling(zm,n) (obj_addr(zm,n) + obj_sibling_offset(zm))
+#define obj_child(zm,n) (obj_addr(zm,n) + obj_child_offset(zm))
 
 /*
  *  Ruby access into the interpreter.
@@ -490,6 +514,12 @@ void h_set_standard_minor( zmachine *zm, int n );
 
 
 /*void dict_get_entry( zmachine *zm, zword i, zchar *entry );*/
+
+zaddr obj_next_prop_addr( zmachine *zm, zaddr prop );
+
+void obj_set_parent( zmachine *zm, zword n, zword pn );
+void obj_set_sibling( zmachine *zm, zword n, zword sn );
+void obj_set_child( zmachine *zm, zword n, zword cn );
 
 /** Processor related functions.  **/
 

@@ -145,15 +145,15 @@
 
 /*** Access data from the program the machine is running. */
 
-#define read_byte(zm,addr) (zm->program[addr])
+#define read_byte(zm,addr) (zm->program[(addr)])
 
-#define read_word(zm,addr) (((zword) zm->program[addr] << 8) | \
-                            zm->program[addr+1])
+#define read_word(zm,addr) \
+  (((zword) zm->program[(addr)] << 8) | zm->program[(addr)+1])
 
-#define write_byte(zm,addr,value) (zm->program[addr] = value)
+#define write_byte(zm,addr,value) (zm->program[(addr)] = (value))
 
-#define write_word(zm,addr,value) { zm->program[addr] = value >> 8; \
-                                    zm->program[addr+1] = value & 0xff; }
+#define write_word(zm,addr,value) { zm->program[(addr)] = (value) >> 8; \
+                                    zm->program[(addr)+1] = (value) & 0xff; }
 
 #define PC(zm) (zm->pcp - zm->program)
 
@@ -233,8 +233,8 @@
 #define dict_num_word_separators(zm) (read_byte( zm, h_dictionary( zm ) ))
 
 #define dict_get_word_separator(zm,i) \
-  (i < dict_num_word_separators ? \
-   read_byte( zm, h_dictionary( zm ) + 1 + i ) : \
+  ((i) < dict_num_word_separators ? \
+   read_byte( zm, h_dictionary( zm ) + 1 + (i) ) : \
    0)
 
 #define dict_entry_length(zm) \
@@ -244,7 +244,7 @@
   (read_word( zm, h_dictionary( zm ) + 1 + dict_num_word_separators( zm ) + 1 ))
 
 #define runtime_error(s) \
-  (rb_raise( rb_eRuntimeError, "Error running program: %s", s ))
+  (rb_raise( rb_eRuntimeError, "Error running program: %s", (s) ))
 
 #define obj_max_objects(zm) (h_version(zm) < 4 ? 255 : 65535)
 #define obj_parent_offset(zm) (h_version(zm) < 4 ? 4 : 6)
@@ -256,34 +256,34 @@
 #define obj_defaults_offset(zm) (h_version(zm) < 4 ? 62 : 126)
 
 #define obj_addr(zm,n) \
-  (h_object_table(zm) + (n-1) * obj_size(zm) + obj_defaults_offset(zm))
+  (h_object_table(zm) + ((n)-1) * obj_size(zm) + obj_defaults_offset(zm))
 
 #define obj_name_addr(zm,n) \
-  (read_word( zm, obj_addr(zm,n) + obj_prop_offset(zm) ))
+  (read_word( zm, obj_addr(zm,(n)) + obj_prop_offset(zm) ))
 
 #define obj_name_size(zm,n) \
-  (read_byte( zm, obj_name_addr(zm,n) ))
+  (read_byte( zm, obj_name_addr(zm,(n)) ))
 
 #define obj_first_prop_addr(zm,n) \
-  (obj_name_addr(zm,n) + 1 + 2 * obj_name_size(zm,n))
+  (obj_name_addr(zm,(n)) + 1 + 2 * obj_name_size(zm,(n)))
 
 #define obj_default_prop(zm,n) \
   (read_word( zm, h_object_table(zm) + ((n) - 1) * 2 ))
 
-#define obj_parent(zm,n) (obj_addr(zm,n) + obj_parent_offset(zm))
-#define obj_sibling(zm,n) (obj_addr(zm,n) + obj_sibling_offset(zm))
-#define obj_child(zm,n) (obj_addr(zm,n) + obj_child_offset(zm))
+#define obj_parent(zm,n) (obj_addr(zm,(n)) + obj_parent_offset(zm))
+#define obj_sibling(zm,n) (obj_addr(zm,(n)) + obj_sibling_offset(zm))
+#define obj_child(zm,n) (obj_addr(zm,(n)) + obj_child_offset(zm))
 
 #define obj_attr(zm,n,a) \
-  (read_byte( zm, obj_addr(zm,n) + (a)/8 ) & (0x80 >> ((a) & 7)))
+  (read_byte( zm, obj_addr(zm,(n)) + (a)/8 ) & (0x80 >> ((a) & 7)))
 
 #define obj_set_attr(zm,n,a) \
-  (write_byte( zm, obj_addr(zm,n) + (a)/8, \
-    read_byte( zm, obj_addr(zm,n) + (a)/8 ) | (0x80 >> ((a) & 7)) ))
+  (write_byte( zm, obj_addr(zm,(n)) + (a)/8, \
+    read_byte( zm, obj_addr(zm,(n)) + (a)/8 ) | (0x80 >> ((a) & 7)) ))
 
 #define obj_clear_attr(zm,n,a) \
-  (write_byte( zm, obj_addr(zm,n) + (a)/8, \
-    read_byte( zm, obj_addr(zm,n) + (a)/8 ) & ~(0x80 >> ((a) & 7)) ))
+  (write_byte( zm, obj_addr(zm,(n)) + (a)/8, \
+    read_byte( zm, obj_addr(zm,(n)) + (a)/8 ) & ~(0x80 >> ((a) & 7)) ))
 
 /*
  *  Ruby access into the interpreter.

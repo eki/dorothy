@@ -148,8 +148,30 @@ void z_get_sibling( zmachine *zm ) {
   p_store( zm, obj_sibling( zm, zm->zargs[0] ) );
 }
 
-void z_insert_obj( zmachine *zm ) {
+/*
+ * z_insert_obj, make an object the first child of another object.
+ *
+ *      zargs[0] = object to be moved
+ *      zargs[1] = destination object
+ *
+ */
 
+void z_insert_obj( zmachine *zm ) {
+  if( zm->zargs[0] == 0 || zm->zargs[0] > obj_max_objects(zm) ) {
+    runtime_error( "Attempt to move illegal object" );
+  }
+
+  if( zm->zargs[1] == 0 || zm->zargs[1] > obj_max_objects(zm) ) {
+    runtime_error( "Attempt to move to illegal object" );
+  }
+
+  obj_unlink( zm, zm->zargs[0] );
+
+  zword child = obj_child( zm, zm->zargs[1] );
+
+  obj_set_parent( zm, zm->zargs[0], zm->zargs[1] );
+  obj_set_child( zm, zm->zargs[1], zm->zargs[0] );
+  obj_set_sibling( zm, zm->zargs[0], child );
 }
 
 /*

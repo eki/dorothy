@@ -1,0 +1,108 @@
+[main x;
+  @print "entering main";
+  @call_1s f1 -> x;
+  @print_num x;
+
+  @call_1s f2 -> x;
+  @print_num x;
+
+  @call_1s f3 -> x;
+  @print_num x;
+
+  @call_1s f4 -> x;
+  @print_num x;
+
+  @call_1s f5 -> x;
+  @print_num x;
+  @call_2s f5 3 -> x;
+  @print_num x;
+  @call_1n f5;
+  @call_2n f5 3;
+  @call_vn f5 3 4 5;
+  @call_vn2 f5 3 4 5;
+  @call_vs2 f5 3 4 5 6 7 -> x;
+
+  @call_1s f6 -> x;
+  @print_num x;
+  @call_2s f6 2 -> x;
+  @print_num x;
+  @call_vs f6 -> x;
+  @print_num x;
+  @call_vs f6 2 -> x;
+  @print_num x;
+  @call_vs f6 2 3 -> x;
+  @print_num x;
+  @call_vs f6 2 3 4 -> x;
+  @print_num x;
+];
+
+[f1;
+  @print_ret "entering and leaving f1";
+];
+
+[f2;
+  @rtrue;
+];
+
+[f3;
+  @rfalse;
+];
+
+[f4;
+  @ret 42;
+];
+
+[f5;
+  @check_arg_count 1 ?OneArg;
+  @print "not 1 arg";
+  @rfalse;
+
+  .OneArg;
+  @print "1 arg";
+  @rtrue;
+];
+
+[f6 x y z;
+  @check_arg_count 3 ?ThreeArg;
+  @check_arg_count 2 ?TwoArg;
+  @check_arg_count 1 ?OneArg;
+  @rfalse;
+
+  .OneArg;
+  @ret x;
+
+  .TwoArg;
+  @add x y -> x;
+  @ret x;
+
+  .ThreeArg;
+  @add x y -> x;
+  @add x z -> x;
+  @ret x;
+];
+
+! output:
+! ---
+! - "entering main"
+! - "entering and leaving f1"
+! - "\n"
+! - 1
+! - 1
+! - 0
+! - 42
+! - "not 1 arg"
+! - 0
+! - "1 arg"
+! - 1
+! - "not 1 arg"
+! - "1 arg"
+! - "1 arg"
+! - "1 arg"
+! - "1 arg"
+! - 0
+! - 2
+! - 0
+! - 2
+! - 5
+! - 9
+

@@ -111,6 +111,35 @@ void z_dec_chk( zmachine *zm ) {
 }
 
 /*
+ *  z_extended, not really an instruction.  Execute an instruction from the
+ *  EXT set.
+ */
+
+void z_extended( zmachine *zm ) {
+  zbyte opcode = *zm->pcp++;
+
+  zm->zargc = 0;
+
+  load_all_operands( zm, *zm->pcp++ );
+
+  if( opcode < 0x1d ) {
+    zm->ext_opcodes[opcode]( zm );
+  }
+  else {
+    runtime_error( "Attempt to execute unknown extended opcode" );
+  }
+}
+
+/*
+ *  z_illegal, not really an instruction.  Stop execution if an illegal
+ *  instruction is encountered.
+ */
+
+void z_illegal( zmachine *zm ) {
+  runtime_error( "Attempt to execute illegal instruction" );
+}
+
+/*
  * z_inc, increment a variable.
  *
  *      zargs[0] = variable to increment

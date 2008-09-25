@@ -29,19 +29,11 @@ void z_erase_window( zmachine *zm ) {
 
 }
 
-void z_extended( zmachine *zm ) {
-
-}
-
 void z_get_cursor( zmachine *zm ) {
 
 }
 
 void z_get_wind_prop( zmachine *zm ) {
-
-}
-
-void z_illegal( zmachine *zm ) {
 
 }
 

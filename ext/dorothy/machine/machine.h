@@ -538,6 +538,9 @@ void obj_set_child( zmachine *zm, zword n, zword cn );
 
 /** Processor related functions.  **/
 
+void load_operand( zmachine *zm, zbyte type );
+void load_all_operands( zmachine *zm, zbyte specifier );
+
 void p_step( zmachine *zm );
 
 zword p_load_global( zmachine *zm, zbyte variable );

@@ -8,7 +8,7 @@
  *
  */
 
-static void load_operand( zmachine *zm, zbyte type ) {
+void load_operand( zmachine *zm, zbyte type ) {
   zword value;
 
   if( type & 2 ) {                   /* variable */
@@ -33,7 +33,7 @@ static void load_operand( zmachine *zm, zbyte type ) {
  *
  */
 
-static void load_all_operands( zmachine *zm, zbyte specifier ) {   
+void load_all_operands( zmachine *zm, zbyte specifier ) {   
   int i;
 
   for( i = 6; i >= 0; i -= 2 ) {

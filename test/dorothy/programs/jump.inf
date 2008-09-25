@@ -55,7 +55,7 @@
 @print "doh!";
 .Branch8;
 @print "ok";
-@rtrue;
+jump Branch4;
 
 .EarlyExit;
 @print "doh!";
@@ -83,4 +83,6 @@
 ! - "ok"
 ! - 3
 ! - "ok"
+! - "ok"
+! - "doh!"
 

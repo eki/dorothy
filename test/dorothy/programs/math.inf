@@ -39,6 +39,10 @@
 @print_num x;
 @art_shift x 2 -> x;
 @print_num x;
+@dec x;
+@print_num x;
+@inc x;
+@print_num x;
 ];
 
 ! output:
@@ -62,5 +66,7 @@
 ! - 2
 ! - 8
 ! - 4
+! - 16
+! - 15
 ! - 16
 

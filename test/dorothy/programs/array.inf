@@ -2,7 +2,7 @@ Array bytes -> 1 1 2 3 5 8;
 Array words --> 1 2 6 24 120 720;
 Array words2 --> 6;
 
-[main x y;
+[main x;
   @loadb bytes 0 -> x;
   @print_num x;
   @loadb bytes 1 -> x;

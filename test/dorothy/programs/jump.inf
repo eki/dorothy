@@ -51,7 +51,10 @@
 .Branch7;
 @print "ok";
 @print_num x;
-
+@piracy ?Branch8;
+@print "doh!";
+.Branch8;
+@print "ok";
 @rtrue;
 
 .EarlyExit;
@@ -79,4 +82,5 @@
 ! - "ok"
 ! - "ok"
 ! - 3
+! - "ok"
 

@@ -52,8 +52,8 @@ class TestPrograms < Test::Unit::TestCase
                 "Trace: \n#{m.trace.join}" )
 
         assert_equal( expected_output[i], s, 
-                      "output (#{i}) doesn't match expected.  Trace: \n" + 
-                      m.trace.join )
+                      "output (token #{i}) doesn't match expected.  " +
+                      "Trace: \n#{m.trace.join}" )
 
         i += 1
       end

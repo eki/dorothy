@@ -66,6 +66,8 @@ void p_step( zmachine *zm ) {
     return;
   }
 
+  int pc = PC(zm);
+
   zbyte opcode = *zm->pcp++;
 
   zm->zargc = 0;
@@ -75,7 +77,7 @@ void p_step( zmachine *zm ) {
     load_operand( zm, (zbyte) (opcode & 0x40) ? 2 : 1 );
     load_operand( zm, (zbyte) (opcode & 0x20) ? 2 : 1 );
 
-    trace( zm, "  (a) (var:%d) Executing %s\n", (opcode & 0x1f),
+    trace( zm, "  (%d) (var:%d) Executing %s\n", pc, (opcode & 0x1f),
            zm->var_opcode_names[opcode & 0x1f] );
 
     zm->var_opcodes[opcode & 0x1f]( zm );
@@ -85,7 +87,7 @@ void p_step( zmachine *zm ) {
 
     load_operand( zm, (zbyte) (opcode >> 4) );
 
-    trace( zm, "  (op1:%d) Executing %s\n", (opcode & 0x0f),
+    trace( zm, "  (%d) (op1:%d) Executing %s\n", pc, (opcode & 0x0f),
            zm->op1_opcode_names[opcode & 0x0f] );
 
     zm->op1_opcodes[opcode & 0x0f]( zm );
@@ -93,7 +95,7 @@ void p_step( zmachine *zm ) {
   } 
   else if( opcode < 0xc0 ) {
 
-    trace( zm, "  (op0:%d) Executing %s\n", (opcode - 0xb0),
+    trace( zm, "  (%d) (op0:%d) Executing %s\n", pc, (opcode - 0xb0),
            zm->op0_opcode_names[opcode - 0xb0] );
 
     zm->op0_opcodes[opcode - 0xb0]( zm );
@@ -108,7 +110,7 @@ void p_step( zmachine *zm ) {
       load_all_operands( zm, *zm->pcp++ );
     }
 
-    trace( zm, "  (b) (var:%d) Executing %s\n", (opcode - 0xc0),
+    trace( zm, "  (%d) (var:%d) Executing %s\n", pc, (opcode - 0xc0),
            zm->var_opcode_names[opcode - 0xc0] );
 
     zm->var_opcodes[opcode - 0xc0]( zm );

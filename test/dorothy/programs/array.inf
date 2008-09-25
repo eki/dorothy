@@ -2,7 +2,7 @@ Array bytes -> 1 1 2 3 5 8;
 Array words --> 1 2 6 24 120 720;
 Array words2 --> 6;
 
-[main x;
+[main x addr;
   @loadb bytes 0 -> x;
   @print_num x;
   @loadb bytes 1 -> x;
@@ -52,6 +52,21 @@ Array words2 --> 6;
   @print_num x;
   @loadw words2 1 -> x;
   @print_num x;
+
+  @scan_table 120 words 6 -> addr ?Success;
+  @print "doh!";
+
+  .Success;
+  @print "success!";
+  @loadw addr 0 -> x;
+  @print_num x;
+
+  @scan_table 42 words 6 -> addr ?Fail;
+  @print "success!";
+  @rtrue;
+
+  .Fail;
+  @print "doh!";
 ];
 
 ! output:
@@ -74,4 +89,7 @@ Array words2 --> 6;
 ! - -300
 ! - 0
 ! - 2
+! - "success!"
+! - 120
+! - "success!"
 

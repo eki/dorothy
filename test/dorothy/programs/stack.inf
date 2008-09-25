@@ -1,0 +1,22 @@
+[main x;
+  @push 4;
+  @push 5;
+  @pull x;
+  @print_num x;
+  @push 10;
+  @push 11;
+  @pull x;
+  @print_num x;
+  @pull x;
+  @print_num x;
+  @pull x;
+  @print_num x;
+];
+
+! output:
+! ---
+! - 5
+! - 11
+! - 10
+! - 4
+

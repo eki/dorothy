@@ -103,8 +103,10 @@ void p_step( zmachine *zm ) {
   } 
   else {
     if (opcode == 0xec || opcode == 0xfa) { 
-      load_all_operands( zm, *zm->pcp++ );
-      load_all_operands( zm, *zm->pcp++ );
+      zbyte s1 = *zm->pcp++;       /* NOTE:  must read both specifier bytes */
+      zbyte s2 = *zm->pcp++;       /*        before loading the operands!   */
+      load_all_operands( zm, s1 );
+      load_all_operands( zm, s2 );
     } 
     else {
       load_all_operands( zm, *zm->pcp++ );

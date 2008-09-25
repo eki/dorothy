@@ -1,0 +1,61 @@
+Array bytes -> 1 1 2 3 5 8;
+Array words --> 1 2 6 24 120 720;
+
+[main x y;
+  @store x 5;
+  @print_num x;
+  @load x -> y;
+  @print_num y;
+
+  @loadb bytes 0 -> x;
+  @print_num x;
+  @loadb bytes 1 -> x;
+  @print_num x;
+  @loadb bytes 2 -> x;
+  @print_num x;
+  @loadb bytes 5 -> x;
+  @print_num x;
+
+  @loadw words 0 -> x;
+  @print_num x;
+  @loadw words 1 -> x;
+  @print_num x;
+  @loadw words 3 -> x;
+  @print_num x;
+  @loadw words 5 -> x;
+  @print_num x;
+
+  @storeb bytes 0 27;
+  @loadb bytes 0 -> x;
+  @print_num x;
+
+  @storeb bytes 3 (-3);
+  @loadb bytes 3 -> x;
+  @print_num x;
+
+  @storew words 0 27;
+  @loadw words 0 -> x;
+  @print_num x;
+
+  @storew words 5 (-300);
+  @loadw words 5 -> x;
+  @print_num x;
+];
+
+! output:
+! ---
+! - 5
+! - 5
+! - 1
+! - 1
+! - 2
+! - 8
+! - 1
+! - 2
+! - 24
+! - 720
+! - 27
+! - 253
+! - 27
+! - -300
+

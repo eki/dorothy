@@ -116,6 +116,7 @@ void z_dec_chk( zmachine *zm ) {
  */
 
 void z_extended( zmachine *zm ) {
+  int pc = PC(zm);
   zbyte opcode = *zm->pcp++;
 
   zm->zargc = 0;
@@ -123,6 +124,9 @@ void z_extended( zmachine *zm ) {
   load_all_operands( zm, *zm->pcp++ );
 
   if( opcode < 0x1d ) {
+    trace( zm, "  (%d) (ext:%d) Executing %s\n", pc, opcode,
+           zm->ext_opcode_names[opcode] );
+
     zm->ext_opcodes[opcode]( zm );
   }
   else {

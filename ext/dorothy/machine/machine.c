@@ -614,7 +614,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
         case 1:
 
           a_addr = abbreviations + (32 * (last_c - 1) + *c) * 2;
-          a_addr = read_word( zm, a_addr ); 
+          a_addr = read_word( zm, a_addr ) << 1;  /* word address! */
 
           trace( zm, "recursing to look up abbreviation (%d)\n", a_addr );
 

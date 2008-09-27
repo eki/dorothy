@@ -1,0 +1,35 @@
+Array foo --> "bar";
+Global dude = 'yo!';
+
+[main x;
+  @print "hello world!";
+  @new_line;
+  @call_1n f;
+  @print_char 97;
+
+  @loadw foo 0 -> x;
+  @print_char x;
+  @loadw foo 1 -> x;
+  @print_char x;
+  @loadw foo 2 -> x;
+  @print_char x;
+
+  @print_addr dude;
+];
+
+[f;
+  @print_ret "print and return";
+];
+
+! output:
+! ---
+! - "hello world!"
+! - "\n"
+! - "print and return"
+! - "\n"
+! - "a"
+! - "b"
+! - "a"
+! - "r"
+! - "yo!"
+

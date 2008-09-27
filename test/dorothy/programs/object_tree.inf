@@ -1,0 +1,87 @@
+Object Foo "Foo";
+Object -> Bar "Bar";
+Object -> -> BarJr "BarJr";
+Object -> Baz "Baz";
+
+[main x;
+  @print_obj Foo;
+  @print_obj Bar;
+  @print_obj BarJr;
+  @print_obj Baz;
+
+  @get_child Foo -> x ?Success;
+  @print "doh!";
+
+  .Success;
+  @print "ok";
+  @print_obj x;
+
+  @get_parent Bar -> x;
+  @print_obj x;
+
+  @get_parent BarJr -> x;
+  @print_obj x;
+
+  @get_parent Baz -> x;
+  @print_obj x;
+
+  @get_sibling Bar -> x ?Success2;
+  @print "doh!";
+
+  .Success2;
+  @print "ok";
+  @print_obj x;
+
+  @get_parent Foo -> x;
+  @print_num x;
+
+  @get_child Baz -> x ?Fail;
+  @print_num x;
+
+  @jin Bar Foo ?Success3;
+  @print "doh!";
+
+  .Success3;
+  @print "ok";
+
+  move Baz to Bar;
+
+  @get_parent Baz -> x;
+  @print_obj x;
+
+  x = child(Baz);
+  @print_num x;
+
+  x = sibling(Baz);
+  @print_obj x;
+
+  objectloop( x in Foo ) print (name) x;
+
+  @rtrue;
+
+  .Fail;
+  @print "doh!";
+];
+
+
+! output:
+! ---
+! - "Foo"
+! - "Bar"
+! - "BarJr"
+! - "Baz"
+! - "ok"
+! - "Bar"
+! - "Foo"
+! - "Bar"
+! - "Foo"
+! - "ok"
+! - "Baz"
+! - 0
+! - 0
+! - "ok"
+! - "Bar"
+! - 0
+! - "BarJr"
+! - "Bar"
+

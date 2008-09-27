@@ -103,19 +103,19 @@ void obj_set_parent( zmachine *zm, zword n, zword pn ) {
 
 void obj_set_sibling( zmachine *zm, zword n, zword sn ) {
   if( h_version(zm) < 4 ) {
-    write_byte( zm, obj_addr(zm,n) + obj_parent_offset(zm), sn );
+    write_byte( zm, obj_addr(zm,n) + obj_sibling_offset(zm), sn );
   }
   else {
-    write_word( zm, obj_addr(zm,n) + obj_parent_offset(zm), sn );
+    write_word( zm, obj_addr(zm,n) + obj_sibling_offset(zm), sn );
   }
 }
 
 void obj_set_child( zmachine *zm, zword n, zword cn ) {
   if( h_version(zm) < 4 ) {
-    write_byte( zm, obj_addr(zm,n) + obj_parent_offset(zm), cn );
+    write_byte( zm, obj_addr(zm,n) + obj_child_offset(zm), cn );
   }
   else {
-    write_word( zm, obj_addr(zm,n) + obj_parent_offset(zm), cn );
+    write_word( zm, obj_addr(zm,n) + obj_child_offset(zm), cn );
   }
 }
 

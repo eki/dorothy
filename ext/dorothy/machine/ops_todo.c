@@ -70,11 +70,11 @@ void z_put_wind_prop( zmachine *zm ) {
 }
 
 void z_read( zmachine *zm ) {
-
+  runtime_error( "z_read is not yet implemented!" );
 }
 
 void z_read_char( zmachine *zm ) {
-
+  runtime_error( "z_read_char is not yet implemented!" );
 }
 
 void z_read_mouse( zmachine *zm ) {

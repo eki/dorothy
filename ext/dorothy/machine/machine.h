@@ -150,6 +150,9 @@
 #define read_word(zm,addr) \
   (((zword) zm->program[(addr)] << 8) | zm->program[(addr)+1])
 
+#define read_n(zm,addr,n) \
+  ((n) == 1 ? read_byte( zm, (addr) ) : read_word( zm, (addr) ))
+
 #define write_byte(zm,addr,value) (zm->program[(addr)] = (value))
 
 #define write_word(zm,addr,value) { zm->program[(addr)] = (value) >> 8; \
@@ -250,6 +253,9 @@
 #define obj_parent_offset(zm) (h_version(zm) < 4 ? 4 : 6)
 #define obj_sibling_offset(zm) (h_version(zm) < 4 ? 5 : 8)
 #define obj_child_offset(zm) (h_version(zm) < 4 ? 6 : 10)
+#define obj_parent_size(zm) (h_version(zm) < 4 ? 1 : 2)
+#define obj_sibling_size(zm) (h_version(zm) < 4 ? 1 : 2)
+#define obj_child_size(zm) (h_version(zm) < 4 ? 1 : 2)
 #define obj_prop_offset(zm) (h_version(zm) < 4 ? 7 : 12)
 #define obj_prop_mask(zm) (h_version(zm) < 4 ? 0x1f : 0x3f)
 #define obj_size(zm) (h_version(zm) < 4 ? 9 : 14)
@@ -270,9 +276,14 @@
 #define obj_default_prop(zm,n) \
   (read_word( zm, h_object_table(zm) + ((n) - 1) * 2 ))
 
-#define obj_parent(zm,n) (obj_addr(zm,(n)) + obj_parent_offset(zm))
-#define obj_sibling(zm,n) (obj_addr(zm,(n)) + obj_sibling_offset(zm))
-#define obj_child(zm,n) (obj_addr(zm,(n)) + obj_child_offset(zm))
+#define obj_parent(zm,n) \
+  (read_n( zm, obj_addr(zm,(n)) + obj_parent_offset(zm), obj_parent_size(zm) ))
+#define obj_sibling(zm,n) \
+  (read_n( zm, obj_addr(zm,(n)) + obj_sibling_offset(zm), obj_sibling_size(zm)))
+#define obj_child(zm,n) \
+  (read_n( zm, obj_addr(zm,(n)) + obj_child_offset(zm), obj_child_size(zm) ))
+
+#define obj_max_attr(zm) (h_version(zm) < 4 ? 31 : 47)
 
 #define obj_attr(zm,n,a) \
   (read_byte( zm, obj_addr(zm,(n)) + (a)/8 ) & (0x80 >> ((a) & 7)))

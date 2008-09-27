@@ -180,7 +180,9 @@ void z_clear_attr( zmachine *zm ) {
  */
 
 void z_get_child( zmachine *zm ) {
-  p_store( zm, obj_child( zm, zm->zargs[0] ) );
+  zword child = obj_child( zm, zm->zargs[0] );
+  p_store( zm, child );
+  p_branch( zm, child );
 }
 
 /*
@@ -305,7 +307,9 @@ void z_get_prop_len( zmachine *zm ) {
  */
 
 void z_get_sibling( zmachine *zm ) {
-  p_store( zm, obj_sibling( zm, zm->zargs[0] ) );
+  zword sibling = obj_sibling( zm, zm->zargs[0] );
+  p_store( zm, sibling );
+  p_branch( zm, sibling );
 }
 
 /*

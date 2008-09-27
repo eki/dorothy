@@ -1,0 +1,23 @@
+
+Object Foo "Foo"
+  with bar 2,
+       baz "baz";
+
+[main x;
+  print (name) Foo;
+  print Foo.bar;
+
+  Foo.bar = 7;
+  print Foo.bar;
+
+  print (string) Foo.baz;
+];
+
+
+! output:
+! ---
+! - "Foo"
+! - 2
+! - 7
+! - "baz"
+

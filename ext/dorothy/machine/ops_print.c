@@ -75,8 +75,30 @@ void z_print_obj( zmachine *zm ) {
   print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) naddr) ) );
 }
 
-void z_print_paddr( zmachine *zm ) {
+/*
+ * z_print_paddr, print the string at the given packed address.
+ *
+ *      zargs[0] = packed address of string to be printed
+ *
+ */
 
+void z_print_paddr( zmachine *zm ) {
+  long addr = zm->zargs[0];
+
+  if( h_version(zm) <= 3 ) {
+    addr *= 2;
+  }
+  else if( h_version(zm) <= 5 ) {
+    addr *= 4;
+  }
+  else if( h_version(zm) <= 7 ) {
+    addr = addr * 2 + h_strings(zm) * 8;
+  }
+  else {
+    addr *= 8;
+  }
+
+  print_rstr( zm, machine_read_string( zm->self, LONG2NUM(addr) ) );
 }
 
 /*

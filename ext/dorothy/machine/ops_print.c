@@ -62,8 +62,17 @@ void z_print_num( zmachine *zm ) {
   print_rstr( zm, INT2NUM((short) zm->zargs[0]) );
 }
 
-void z_print_obj( zmachine *zm ) {
+/*
+ * z_print_obj, print an object description.
+ *
+ *      zargs[0] = number of object to be printed
+ *
+ */
 
+void z_print_obj( zmachine *zm ) {
+  zaddr naddr = obj_name_addr( zm, zm->zargs[0] ) + 1; /* skip the size byte */
+
+  print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) naddr) ) );
 }
 
 void z_print_paddr( zmachine *zm ) {

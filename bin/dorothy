@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'dorothy'
+
+if ARGV.first
+
+  m = Machine.new( ARGV.first )
+
+  until m.finished?
+    m.step
+
+    until m.output.empty?
+      print m.output
+      m.output.clear
+    end
+  end
+
+end
+

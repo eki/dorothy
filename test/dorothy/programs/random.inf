@@ -1,0 +1,25 @@
+
+[main x y;
+  @random -14 -> x;
+  @print_num x;
+
+  @random 10 -> x;
+  
+  @random -14 -> y;
+  @print_num y;
+
+  @random 10 -> y;
+
+  @je x y ?Equal;
+  @print "not equal!";
+
+  .Equal;
+  @print "ok";
+];
+
+! output:
+! ---
+! - 0
+! - 0
+! - "ok"
+

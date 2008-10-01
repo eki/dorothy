@@ -7,7 +7,9 @@ if ARGV.first
   m = Machine.new( ARGV.first )
 
   until m.finished?
-    m.step
+    if ! m.step
+      m.keyboard << $stdin.gets
+    end
 
     until m.output.empty?
       print m.output

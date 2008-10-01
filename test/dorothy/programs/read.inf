@@ -1,0 +1,71 @@
+Array text->50;
+Array parse->14;
+
+Global bar='open';
+Global baz='mailbox';
+
+[main x addr;
+  @print_addr bar;
+  @print_addr baz;
+
+  @storeb text 0 48;
+  @storeb text 1 0;
+
+  @storeb parse 0 3;
+
+  @aread text parse -> x;
+
+  @print_num x;
+
+  @loadb text 1 -> x;
+  @print_num x;
+
+  @call_2n print_text_buffer text;
+
+  @loadb parse 1 -> x;
+  @print_num x;
+
+  @add parse 2 -> addr;
+  @loadw addr 0 -> x;
+  @print_addr x;
+
+  @add parse 6 -> addr;
+  @loadw addr 0 -> x;
+  @print_addr x;
+];
+
+[print_text_buffer buf n i x;
+  @loadb buf 1 -> n;
+
+  for( i = 2 : i < n+2 : i++ ) {
+    @loadb buf i -> x;
+    @print_char x;
+  }
+];
+
+! input:
+! ---
+! - "open mailbox\n"
+
+! output:
+! ---
+! - "open"
+! - "mailbox"
+! - 10
+! - 12
+! - "o"
+! - "p"
+! - "e"
+! - "n"
+! - " "
+! - "m"
+! - "a"
+! - "i"
+! - "l"
+! - "b"
+! - "o"
+! - "x"
+! - 2
+! - "open"
+! - "mailbox"
+

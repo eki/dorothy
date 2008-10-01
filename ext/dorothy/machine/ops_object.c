@@ -3,11 +3,15 @@
 
 /*
  *  Given the address of an object's property ID, parse out the size of the
- *  property DATA.  NOTE:  The given address isn't the address of the 
- *  property's DATA.
+ *  property DATA.  If the at_id bool is true, the given address is the start
+ *  of the property table, otherwise it's the start of the property data.
  */
 
-zaddr obj_prop_data_size( zmachine *zm, zaddr prop ) {
+zaddr obj_prop_data_size( zmachine *zm, zaddr prop, bool at_id ) {
+  if( ! at_id ) {
+    prop--;
+  }
+
   zbyte size = read_byte( zm, prop );
 
   if( h_version(zm) < 4 ) {
@@ -17,7 +21,12 @@ zaddr obj_prop_data_size( zmachine *zm, zaddr prop ) {
     size = (size >> 6) + 1;
   }
   else {
-    size = read_byte( zm, prop+1 ) & obj_prop_mask(zm);
+    if( at_id ) {
+      size = read_byte( zm, prop+1 );
+    }
+
+    size &= obj_prop_mask(zm);
+
     size = size == 0 ? 64 : size;
   }
 
@@ -31,12 +40,12 @@ zaddr obj_prop_data_size( zmachine *zm, zaddr prop ) {
 
 zaddr obj_prop_size( zmachine *zm, zaddr prop ) {
   if( h_version(zm) < 4 ) {
-    return obj_prop_data_size( zm, prop ) + 1;
+    return obj_prop_data_size( zm, prop, true ) + 1;
   }
   else {
     zbyte size = read_byte( zm, prop );
     
-    return obj_prop_data_size( zm, prop ) + ((size & 0x80) ? 2 : 1);
+    return obj_prop_data_size( zm, prop, true ) + ((size & 0x80) ? 2 : 1);
   }
 }
 
@@ -249,7 +258,7 @@ void z_get_prop( zmachine *zm ) {
     value = obj_default_prop( zm, zm->zargs[1] );
   }
   else {
-    zword size = obj_prop_data_size( zm, prop_addr );
+    zword size = obj_prop_data_size( zm, prop_addr, true );
 
     if( size == 1 ) {
       value = read_byte( zm, obj_prop_data_addr( zm, prop_addr ) );
@@ -296,7 +305,7 @@ void z_get_prop_addr( zmachine *zm ) {
  */
 
 void z_get_prop_len( zmachine *zm ) {
-  p_store( zm, obj_prop_size( zm, zm->zargs[0] - 1 ) );
+  p_store( zm, obj_prop_data_size( zm, zm->zargs[0], false ) );
 }
 
 /*
@@ -378,7 +387,7 @@ void z_put_prop( zmachine *zm ) {
     runtime_error( "Attempt to write to nonexistant property" );
   }
   else {
-    zword size = obj_prop_data_size( zm, prop_addr );
+    zword size = obj_prop_data_size( zm, prop_addr, true );
 
     if( size == 1 ) {
       write_byte( zm, obj_prop_data_addr( zm, prop_addr ), zm->zargs[2] );

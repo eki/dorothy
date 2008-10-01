@@ -39,15 +39,6 @@ VALUE machine_initialize( VALUE self, VALUE filename ) {
     rb_raise( rb_eRuntimeError, "Error reading header: %s", fn );
   }
 
-  header = rb_class_new_instance( 1, &self, Header );
-  rb_iv_set( self, "@header", header );
-
-  rb_iv_set( self, "@dictionary", 
-                   rb_class_new_instance( 1, &self, Dictionary ) );
-
-  rb_iv_set( self, "@output", rb_ary_new() );
-  rb_iv_set( self, "@trace", rb_ary_new() );
-
   /* Set the actual program length (don't trust the program header) */
 
   fseek( fp, 0, SEEK_END );
@@ -74,6 +65,22 @@ VALUE machine_initialize( VALUE self, VALUE filename ) {
 
   zm->sp = zm->fp = zm->stack + STACK_SIZE;
   zm->frame_count = 0;
+
+
+  /* Now that the program is loaded, finish setting up the Ruby stuff */
+
+  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+
+  rb_iv_set( self, "@output", rb_ary_new() );
+
+  rb_iv_set( self, "@keyboard",
+    rb_funcall( InputStream, id_new, 1, UINT2NUM(0) ) );
+
+  rb_iv_set( self, "@trace", rb_ary_new() );
+
+  rb_iv_set( self, "@dictionary", 
+    rb_funcall( Dictionary, id_new, 2, self, UINT2NUM(h_dictionary(zm)) ) );
+
 
   /* setup the z_op arrays */
 
@@ -376,9 +383,7 @@ VALUE machine_step( VALUE self ) {
 
   Data_Get_Struct( self, zmachine, zm );
 
-  p_step( zm );
-
-  return self;
+  return p_step( zm ) ? Qtrue : Qfalse;
 }
 
 /*
@@ -409,6 +414,27 @@ VALUE machine_read_word( VALUE self, VALUE addr ) {
   Data_Get_Struct( self, zmachine, zm );
 
   return INT2NUM(read_word( zm, a ));
+}
+
+VALUE machine_read_string_array( VALUE self, VALUE addr, VALUE length ) {
+  zmachine *zm;
+  zaddr a = (zaddr) NUM2INT(addr);
+
+  Data_Get_Struct( self, zmachine, zm );
+
+  zbyte zs[2] = { 5, 0 };
+  zbyte *c = &zs[0];
+  VALUE str = rb_str_new2( "" );
+  int len = NUM2INT(length);
+  int i;
+
+  for( i = 0; i < len; i++ ) {
+    *c = translate_from_zscii( zm, read_byte( zm, a + i ) );
+
+    rb_str_append( str, rb_str_new2( c ) );
+  }
+
+  return str;
 }
 
 /*
@@ -482,6 +508,54 @@ zchar translate_from_zscii( zmachine *zm, zbyte c ) {
   return c;
 }
 
+zbyte translate_to_zscii( zmachine *zm, zchar c ) {
+  zaddr unicode = h_unicode_table( zm );
+  int i;
+
+  if( c == ZC_SINGLE_CLICK ) {
+    return 0xfe;
+  }
+
+  if( c == ZC_DOUBLE_CLICK ) {
+    return 0xfd;
+  }
+
+  if( c == ZC_MENU_CLICK ) {
+    return 0xfc;
+  }
+
+  if( c >= ZC_LATIN1_MIN ) {
+
+    if( unicode != 0 ) {    /* game has its own Unicode table */
+      zbyte N = read_byte( zm, unicode );
+
+      for( i = 0x9b; i < 0x9b + N; i++ ) {
+        if( c == read_word( zm, unicode + 1 + 2 * (i - 0x9b) ) ) {
+          return (zbyte) i;
+        }
+      }
+
+      return '?';
+    } 
+    else {                        /* game uses standard set */
+
+      for( i = 0x9b; i <= 0xdf; i++ ) {
+        if( c == zscii_to_latin1[i - 0x9b] ) {
+          return (zbyte) i;
+        }
+      }
+
+      return '?';
+    }
+  }
+
+  if( c == 0 ) {    /* Safety thing from David Kinder */  
+    c = '?';        /* regarding his Unicode patches */
+  }                 /* Sept 15, 2002 */
+
+  return c;
+}
+
 static zchar alphabet( zmachine *zm, int set, int index ) {   
   int version = h_version( zm );
   zaddr alphabet = h_alphabet_table( zm );
@@ -514,7 +588,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
   Data_Get_Struct( self, zmachine, zm );
 
   long addr = NUM2LONG(a);
-  bool consume = FALSE;
+  bool consume = false;
   int limit;
 
   if( addr > 0 ) {
@@ -522,7 +596,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
   }
   else if( addr == -1 ) {
     addr = PC(zm);
-    consume = TRUE;
+    consume = true;
     trace( zm, "read_string called with PC (%d)\n", addr );
   }
 

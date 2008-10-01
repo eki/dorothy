@@ -7,12 +7,14 @@ class TestPrograms < Test::Unit::TestCase
 
   PROGRAMS_DIR = "#{File.dirname( __FILE__ )}/programs"
 
-  Dir["#{PROGRAMS_DIR}/*.inf"].each do |fn|
+  Dir["#{PROGRAMS_DIR}/*.z?"].each do |zf|
 
-    zf = "#{PROGRAMS_DIR}/#{File.basename( fn, '.inf' )}.z5"
+    fn = "#{PROGRAMS_DIR}/#{File.basename( zf, File.extname( zf ) )}.inf"
     tm = "test_#{File.basename( fn, '.inf' )}"
 
     output_yaml, reading_output_yaml = "", nil
+    input_yaml, reading_input_yaml = "", nil
+
     open( fn, "r" ) do |f|
       while s = f.gets
         if s =~ /^\! output:/
@@ -23,22 +25,33 @@ class TestPrograms < Test::Unit::TestCase
           else
             reading_output_yaml = false
           end
+        elsif s =~ /^\! input:/
+          reading_input_yaml = true
+        elsif reading_input_yaml 
+          if s =~ /^\! (.*)/
+            input_yaml += $1 + "\n"
+          else
+            reading_input_yaml = false
+          end
         end
       end
     end
 
     expected_output = YAML::load( output_yaml ) if output_yaml
+    input = YAML::load( input_yaml ) if input_yaml
 
     if expected_output
       define_method( tm ) do
-        __test_program( zf, expected_output )
+        __test_program( zf, expected_output, input )
       end
     end
   end
 
 
-  def __test_program( filename, expected_output )
+  def __test_program( filename, expected_output, input )
     m = Machine.new( filename )
+
+    input.each { |s| m.keyboard << s }  if input
 
     i = 0
    

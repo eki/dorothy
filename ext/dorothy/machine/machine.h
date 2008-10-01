@@ -1,8 +1,161 @@
 
 #include "ruby.h"
 
-#define TRUE 1
-#define FALSE 0
+/*
+ *  Ruby access into the interpreter.
+ */
+
+/* Classes */
+
+VALUE Machine;
+VALUE Header;
+VALUE Dictionary;
+VALUE Entry;
+VALUE InputStream;
+
+
+/* Prototypes */
+
+VALUE machine_alloc( VALUE klass );
+VALUE machine_initialize( VALUE self, VALUE filename );
+VALUE machine_program_length( VALUE self );
+VALUE machine_read_byte( VALUE self, VALUE addr );
+VALUE machine_read_word( VALUE self, VALUE addr );
+VALUE machine_read_string( VALUE self, VALUE addr );
+VALUE machine_read_string_array( VALUE self, VALUE addr, VALUE length );
+VALUE machine_step( VALUE self );
+VALUE machine_finished( VALUE self );
+void  machine_free( void * );
+
+VALUE header_version( VALUE self );
+
+VALUE header_status_line_score( VALUE self );
+VALUE header_status_line_time( VALUE self );
+VALUE header_story_split( VALUE self );
+VALUE header_status_line_available( VALUE self );
+VALUE header_screen_splitting_available( VALUE self );
+VALUE header_variable_width_font_default( VALUE self );
+VALUE header_colors_available( VALUE self );
+VALUE header_picture_display_available( VALUE self );
+VALUE header_bold_available( VALUE self );
+VALUE header_italics_available( VALUE self );
+VALUE header_fixed_width_available( VALUE self );
+VALUE header_sound_available( VALUE self );
+VALUE header_timed_input_available( VALUE self );
+
+VALUE header_transcripting_on( VALUE self );
+VALUE header_force_fixed_width( VALUE self );
+VALUE header_status_line_redraw( VALUE self );
+VALUE header_wants_pictures( VALUE self );
+VALUE header_wants_undo( VALUE self );
+VALUE header_wants_mouse( VALUE self );
+VALUE header_wants_color( VALUE self );
+VALUE header_wants_sound( VALUE self );
+VALUE header_wants_menus( VALUE self );
+
+VALUE header_set_status_line_available( VALUE self, VALUE b );
+VALUE header_set_screen_splitting_available( VALUE self, VALUE b );
+VALUE header_set_variable_width_font_default( VALUE self, VALUE b );
+VALUE header_set_colors_available( VALUE self, VALUE b );
+VALUE header_set_picture_display_available( VALUE self, VALUE b );
+VALUE header_set_bold_available( VALUE self, VALUE b );
+VALUE header_set_italics_available( VALUE self, VALUE b );
+VALUE header_set_fixed_width_available( VALUE self, VALUE b );
+VALUE header_set_sound_available( VALUE self, VALUE b );
+VALUE header_set_timed_input_available( VALUE self, VALUE b );
+
+VALUE header_set_transcripting_on( VALUE self, VALUE b );
+VALUE header_set_force_fixed_width( VALUE self, VALUE b );
+VALUE header_set_status_line_redraw( VALUE self, VALUE b );
+VALUE header_set_wants_pictures( VALUE self, VALUE b );
+VALUE header_set_wants_undo( VALUE self, VALUE b );
+VALUE header_set_wants_mouse( VALUE self, VALUE b );
+VALUE header_set_wants_color( VALUE self, VALUE b );
+VALUE header_set_wants_sound( VALUE self, VALUE b );
+VALUE header_set_wants_menus( VALUE self, VALUE b );
+
+VALUE header_static_memory( VALUE self );
+VALUE header_high_memory( VALUE self );
+
+VALUE header_initial_program_counter( VALUE self );
+VALUE header_main_routine( VALUE self );
+
+VALUE header_dictionary( VALUE self );
+VALUE header_object_table( VALUE self );
+VALUE header_global_table( VALUE self );
+VALUE header_abbreviations_table( VALUE self );
+VALUE header_terminating_table( VALUE self );
+VALUE header_alphabet_table( VALUE self );
+
+VALUE header_routines( VALUE self );
+VALUE header_strings( VALUE self );
+
+VALUE header_extension_table( VALUE self );
+
+VALUE header_extension_table_size( VALUE self );
+
+VALUE header_mouse_x( VALUE self );
+VALUE header_mouse_y( VALUE self );
+
+VALUE header_set_mouse_x( VALUE self, VALUE x );
+VALUE header_set_mouse_y( VALUE self, VALUE y );
+
+VALUE header_unicode_table( VALUE self );
+
+VALUE header_program_length( VALUE self );
+VALUE header_program_checksum( VALUE self );
+
+VALUE header_interpreter_number( VALUE self );
+VALUE header_interpreter_version( VALUE self );
+
+VALUE header_set_interpreter_number( VALUE self, VALUE n );
+VALUE header_set_interpreter_version( VALUE self, VALUE v );
+
+VALUE header_screen_rows( VALUE self );
+VALUE header_screen_cols( VALUE self );
+
+VALUE header_set_screen_rows( VALUE self, VALUE r );
+VALUE header_set_screen_cols( VALUE self, VALUE c );
+
+VALUE header_screen_width( VALUE self );
+VALUE header_screen_height( VALUE self );
+
+VALUE header_set_screen_width( VALUE self, VALUE w );
+VALUE header_set_screen_height( VALUE self, VALUE h );
+
+VALUE header_font_width( VALUE self );
+VALUE header_font_height( VALUE self );
+
+VALUE header_set_font_width( VALUE self, VALUE w );
+VALUE header_set_font_height( VALUE self, VALUE h );
+
+VALUE header_default_background_color( VALUE self );
+VALUE header_default_foreground_color( VALUE self );
+
+VALUE header_set_default_background_color( VALUE self, VALUE c );
+VALUE header_set_default_foreground_color( VALUE self, VALUE c );
+
+VALUE header_output_stream3_width( VALUE self );
+
+VALUE header_set_output_stream3_width( VALUE self, VALUE w );
+
+VALUE header_standard_major( VALUE self );
+VALUE header_standard_minor( VALUE self );
+
+VALUE header_set_standard_major( VALUE self, VALUE n );
+VALUE header_set_standard_minor( VALUE self, VALUE n );
+
+VALUE dictionary_load( VALUE self );
+
+ID id_new, id_srand, id_rand,
+   id_line_available, id_char_available, id_read_line, id_read_char,
+   id_parse;
+
+
+/*** Constants ***/
+
+#define true 1
+#define false 0
 #define STACK_SIZE 1024
 #define MAX_NESTING 16
 
@@ -233,18 +386,28 @@
 #define h_standard_major(zm) (read_byte( zm, 0x32 ))
 #define h_standard_minor(zm) (read_byte( zm, 0x33 ))
 
-#define dict_num_word_separators(zm) (read_byte( zm, h_dictionary( zm ) ))
+#define dict_num_word_separators(zm,dict) (read_byte( zm, dict ))
 
-#define dict_get_word_separator(zm,i) \
-  ((i) < dict_num_word_separators ? \
-   read_byte( zm, h_dictionary( zm ) + 1 + (i) ) : \
+#define dict_get_word_separator(zm,dict,i) \
+  ((i) < dict_num_word_separators( zm, (dict) ) ? \
+   read_byte( zm, (dict) + 1 + (i) ) : \
    0)
 
-#define dict_entry_length(zm) \
-  (read_byte( zm, h_dictionary( zm ) + 1 + dict_num_word_separators( zm ) ))
+#define dict_entry_length(zm,dict) \
+  (read_byte( zm, (dict) + 1 + dict_num_word_separators( zm, (dict) ) ))
 
-#define dict_num_entries(zm) \
-  (read_word( zm, h_dictionary( zm ) + 1 + dict_num_word_separators( zm ) + 1 ))
+#define dict_num_entries(zm,dict) \
+  (read_word( zm, (dict) + 1 + dict_num_word_separators( zm, (dict) ) + 1 ))
+
+#define keyboard(zm) (rb_iv_get( zm->self, "@keyboard" ))
+
+#define line_available(zm) \
+  (RTEST(rb_funcall( keyboard(zm), id_line_available, 0)))
+
+#define char_available(zm) \
+  (RTEST(rb_funcall( keyboard(zm), id_char_available, 0)))
+
+#define text_buffer_offset(zm) (h_version(zm) < 5 ? 1 : 2)
 
 #define runtime_error(s) \
   (rb_raise( rb_eRuntimeError, "Error running program: %s", (s) ))
@@ -295,153 +458,6 @@
 #define obj_clear_attr(zm,n,a) \
   (write_byte( zm, obj_addr(zm,(n)) + (a)/8, \
     read_byte( zm, obj_addr(zm,(n)) + (a)/8 ) & ~(0x80 >> ((a) & 7)) ))
-
-/*
- *  Ruby access into the interpreter.
- */
-
-/* Classes */
-
-VALUE Machine;
-VALUE Header;
-VALUE Dictionary;
-
-
-
-/* Prototypes */
-
-VALUE machine_alloc( VALUE klass );
-VALUE machine_initialize( VALUE self, VALUE filename );
-VALUE machine_program_length( VALUE self );
-VALUE machine_read_byte( VALUE self, VALUE addr );
-VALUE machine_read_word( VALUE self, VALUE addr );
-VALUE machine_read_string( VALUE self, VALUE addr );
-VALUE machine_step( VALUE self );
-VALUE machine_finished( VALUE self );
-void  machine_free( void * );
-
-VALUE header_version( VALUE self );
-
-VALUE header_status_line_score( VALUE self );
-VALUE header_status_line_time( VALUE self );
-VALUE header_story_split( VALUE self );
-VALUE header_status_line_available( VALUE self );
-VALUE header_screen_splitting_available( VALUE self );
-VALUE header_variable_width_font_default( VALUE self );
-VALUE header_colors_available( VALUE self );
-VALUE header_picture_display_available( VALUE self );
-VALUE header_bold_available( VALUE self );
-VALUE header_italics_available( VALUE self );
-VALUE header_fixed_width_available( VALUE self );
-VALUE header_sound_available( VALUE self );
-VALUE header_timed_input_available( VALUE self );
-
-VALUE header_transcripting_on( VALUE self );
-VALUE header_force_fixed_width( VALUE self );
-VALUE header_status_line_redraw( VALUE self );
-VALUE header_wants_pictures( VALUE self );
-VALUE header_wants_undo( VALUE self );
-VALUE header_wants_mouse( VALUE self );
-VALUE header_wants_color( VALUE self );
-VALUE header_wants_sound( VALUE self );
-VALUE header_wants_menus( VALUE self );
-
-VALUE header_set_status_line_available( VALUE self, VALUE b );
-VALUE header_set_screen_splitting_available( VALUE self, VALUE b );
-VALUE header_set_variable_width_font_default( VALUE self, VALUE b );
-VALUE header_set_colors_available( VALUE self, VALUE b );
-VALUE header_set_picture_display_available( VALUE self, VALUE b );
-VALUE header_set_bold_available( VALUE self, VALUE b );
-VALUE header_set_italics_available( VALUE self, VALUE b );
-VALUE header_set_fixed_width_available( VALUE self, VALUE b );
-VALUE header_set_sound_available( VALUE self, VALUE b );
-VALUE header_set_timed_input_available( VALUE self, VALUE b );
-
-VALUE header_set_transcripting_on( VALUE self, VALUE b );
-VALUE header_set_force_fixed_width( VALUE self, VALUE b );
-VALUE header_set_status_line_redraw( VALUE self, VALUE b );
-VALUE header_set_wants_pictures( VALUE self, VALUE b );
-VALUE header_set_wants_undo( VALUE self, VALUE b );
-VALUE header_set_wants_mouse( VALUE self, VALUE b );
-VALUE header_set_wants_color( VALUE self, VALUE b );
-VALUE header_set_wants_sound( VALUE self, VALUE b );
-VALUE header_set_wants_menus( VALUE self, VALUE b );
-
-VALUE header_static_memory( VALUE self );
-VALUE header_high_memory( VALUE self );
-
-VALUE header_initial_program_counter( VALUE self );
-VALUE header_main_routine( VALUE self );
-
-VALUE header_dictionary( VALUE self );
-VALUE header_object_table( VALUE self );
-VALUE header_global_table( VALUE self );
-VALUE header_abbreviations_table( VALUE self );
-VALUE header_terminating_table( VALUE self );
-VALUE header_alphabet_table( VALUE self );
-
-VALUE header_routines( VALUE self );
-VALUE header_strings( VALUE self );
-
-VALUE header_extension_table( VALUE self );
-
-VALUE header_extension_table_size( VALUE self );
-
-VALUE header_mouse_x( VALUE self );
-VALUE header_mouse_y( VALUE self );
-
-VALUE header_set_mouse_x( VALUE self, VALUE x );
-VALUE header_set_mouse_y( VALUE self, VALUE y );
-
-VALUE header_unicode_table( VALUE self );
-
-VALUE header_program_length( VALUE self );
-VALUE header_program_checksum( VALUE self );
-
-VALUE header_interpreter_number( VALUE self );
-VALUE header_interpreter_version( VALUE self );
-
-VALUE header_set_interpreter_number( VALUE self, VALUE n );
-VALUE header_set_interpreter_version( VALUE self, VALUE v );
-
-VALUE header_screen_rows( VALUE self );
-VALUE header_screen_cols( VALUE self );
-
-VALUE header_set_screen_rows( VALUE self, VALUE r );
-VALUE header_set_screen_cols( VALUE self, VALUE c );
-
-VALUE header_screen_width( VALUE self );
-VALUE header_screen_height( VALUE self );
-
-VALUE header_set_screen_width( VALUE self, VALUE w );
-VALUE header_set_screen_height( VALUE self, VALUE h );
-
-VALUE header_font_width( VALUE self );
-VALUE header_font_height( VALUE self );
-
-VALUE header_set_font_width( VALUE self, VALUE w );
-VALUE header_set_font_height( VALUE self, VALUE h );
-
-VALUE header_default_background_color( VALUE self );
-VALUE header_default_foreground_color( VALUE self );
-
-VALUE header_set_default_background_color( VALUE self, VALUE c );
-VALUE header_set_default_foreground_color( VALUE self, VALUE c );
-
-VALUE header_output_stream3_width( VALUE self );
-
-VALUE header_set_output_stream3_width( VALUE self, VALUE w );
-
-VALUE header_standard_major( VALUE self );
-VALUE header_standard_minor( VALUE self );
-
-VALUE header_set_standard_major( VALUE self, VALUE n );
-VALUE header_set_standard_minor( VALUE self, VALUE n );
-
-VALUE dictionary_num_word_separators( VALUE self );
-VALUE dictionary_entry_length( VALUE self );
-VALUE dictionary_num_entries( VALUE self );
-VALUE dictionary_entries( VALUE self );
 
 /*
  *  The data and functions for the interpreter (C).
@@ -552,7 +568,7 @@ void obj_set_child( zmachine *zm, zword n, zword cn );
 void load_operand( zmachine *zm, zbyte type );
 void load_all_operands( zmachine *zm, zbyte specifier );
 
-void p_step( zmachine *zm );
+bool p_step( zmachine *zm );
 
 zword p_load_global( zmachine *zm, zbyte variable );
 zword p_load( zmachine *zm );
@@ -567,6 +583,11 @@ void p_branch( zmachine *zm, bool flag );
 
 void storew( zmachine *zm, zaddr addr, zword value );
 void storeb( zmachine *zm, zaddr addr, zbyte value );
+
+/** Text processing **/
+
+zchar translate_from_zscii( zmachine *zm, zbyte c );
+zbyte translate_to_zscii( zmachine *zm, zchar c );
 
 /* Ops */
 

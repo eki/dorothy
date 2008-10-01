@@ -252,7 +252,7 @@ void z_nop( zmachine *zm ) {
  */
 
 void z_piracy( zmachine *zm ) {
-  p_branch( zm, TRUE );
+  p_branch( zm, true );
 }
 
 /*

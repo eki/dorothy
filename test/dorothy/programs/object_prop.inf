@@ -1,7 +1,12 @@
 
+Property bar 11;
+Property baz 12;
+Property ary 13;
+
 Object Foo "Foo"
   with bar 2,
-       baz "baz";
+       baz "baz",
+       ary 1 2 3 4 5;
 
 [main x;
   print (name) Foo;
@@ -11,6 +16,18 @@ Object Foo "Foo"
   print Foo.bar;
 
   print (string) Foo.baz;
+
+  @get_prop_addr Foo bar -> x;
+  @get_prop_len x -> x;
+  @print_num x;
+
+  @get_prop_addr Foo baz -> x;
+  @get_prop_len x -> x;
+  @print_num x;
+
+  @get_prop_addr Foo ary -> x;
+  @get_prop_len x -> x;
+  @print_num x;
 ];
 
 
@@ -20,4 +37,7 @@ Object Foo "Foo"
 ! - 2
 ! - 7
 ! - "baz"
+! - 2
+! - 2
+! - 10
 

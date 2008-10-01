@@ -51,19 +51,28 @@ void load_all_operands( zmachine *zm, zbyte specifier ) {
  *  Execute the next instruction.
  */
 
-void p_step( zmachine *zm ) {
+bool p_step( zmachine *zm ) {
   if( zm->finished == 0 ) {
+    zm->finished++;
     if( h_version(zm) != V6 ) {
       zm->pcp = zm->program + h_initial_program_counter(zm);
       trace( zm, "first step (pc:%d)\n", PC(zm) );
     } 
     else {
       p_call( zm, h_start_pc(zm), 0, NULL, 0 );
-      return;
+      return false;
     }
   }
   else if( zm->finished >= 9999 ) {
-    return;
+    return false;
+  }
+
+  if( *zm->pcp == 228 && ! line_available(zm) ) {
+    return false;    /* z_read, but a full line of input is not available */
+  }
+
+  if( *zm->pcp == 246 && ! char_available(zm) ) {
+    return false;    /* z_read_char, but no char available */
   }
 
   int pc = PC(zm);
@@ -117,8 +126,11 @@ void p_step( zmachine *zm ) {
 
     zm->var_opcodes[opcode - 0xc0]( zm );
   }
-
+/*
   zm->finished++;
+*/
+
+  return true;
 }
 
 /*

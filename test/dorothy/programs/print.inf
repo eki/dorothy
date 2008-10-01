@@ -4,7 +4,7 @@ Global dude = 'yo!';
 [main x;
   @print "hello world!";
   @new_line;
-  @call_1n f;
+  @call f -> x;
   @print_char 97;
 
   @loadw foo 0 -> x;

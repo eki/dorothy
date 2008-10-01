@@ -1,65 +1,51 @@
 
 #include "machine.h"
 
-/*
-void dict_get_entry( zmachine *zm, zword i, zchar *entry ) {
-  zaddr d = h_dictionary( zm );
-  zbyte ns = dict_num_word_separators( zm );
-  zword ne = dict_num_entries( zmachine *zm );
-}
-*/
 
-VALUE dictionary_num_word_separators( VALUE self ) {
+VALUE dictionary_load( VALUE self ) {
   VALUE machine = rb_iv_get( self, "@machine" );
+  zaddr dict = (zaddr) NUM2UINT(rb_iv_get( self, "@addr" ));
   zmachine *zm;
 
   Data_Get_Struct( machine, zmachine, zm );
 
-  return INT2NUM(dict_num_word_separators( zm ));
-}
+  zbyte entry_length = dict_entry_length( zm, dict );
+  zword ne = dict_num_entries( zm, dict );
+  zbyte ns = dict_num_word_separators( zm, dict );
 
-VALUE dictionary_entry_length( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+  rb_iv_set( self, "@entry_length", UINT2NUM(entry_length) );
 
-  Data_Get_Struct( machine, zmachine, zm );
-
-  return INT2NUM(dict_entry_length( zm ));
-}
-
-VALUE dictionary_num_entries( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
-
-  Data_Get_Struct( machine, zmachine, zm );
-
-  return INT2NUM(dict_num_entries( zm ));
-}
-
-VALUE dictionary_entries( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
-
-  Data_Get_Struct( machine, zmachine, zm );
-
-  zbyte entry_length = dict_entry_length( zm );
-  zword ne = dict_num_entries( zm );
-  zaddr d = h_dictionary( zm );
-  zbyte ns = dict_num_word_separators( zm );
   zaddr a;
+  zbyte zs[2] = { 5, 0 };
+  zbyte *c = &zs[0];
 
   VALUE ary = rb_ary_new();
+
+  /* Load the entries array */
 
   int i;
 
   for( i = 0; i < ne; i++ ) {
-    a = d + 1 + ns + 1 + 2 + entry_length * i;
-    printf( "about to call read_string with addr (%d)\n", a );
-    rb_ary_push( ary, machine_read_string( machine, UINT2NUM(a) ) );
+    a = dict + 1 + ns + 1 + 2 + entry_length * i;
+
+    rb_ary_push( ary,
+      rb_funcall( Entry, id_new, 2,
+        machine_read_string( machine, UINT2NUM(a) ), UINT2NUM(a) ) );
   }
 
-  return ary;
+  rb_iv_set( self, "@entries", ary );
+
+  /* Load the word separators array */
+
+  ary = rb_ary_new();
+
+  for( i = 0; i < ns; i++ ) {
+    *c = read_byte( zm, dict + 1 + i );
+    rb_ary_push( ary, rb_str_new2( c ) );
+  }
+
+  rb_iv_set( self, "@word_separators", ary );
+
+  return self;
 }
-
-
 

@@ -195,12 +195,19 @@ void Init_machine() {
 
   Dictionary = rb_define_class( "Dictionary", rb_cObject );
   
-  rb_define_method( Dictionary, "num_word_separators", 
-                                dictionary_num_word_separators, 0 );
+  rb_define_method( Dictionary, "load", dictionary_load, 0 );
 
-  rb_define_method( Dictionary, "entry_length", dictionary_entry_length, 0 );
-  rb_define_method( Dictionary, "num_entries", dictionary_num_entries, 0 );
-  rb_define_method( Dictionary, "entries", dictionary_entries, 0 );
+  Entry = rb_define_class_under( Dictionary, "Entry", rb_cObject );
 
+  InputStream = rb_define_class_under( Machine, "InputStream", rb_cObject );
+
+  id_new = rb_intern( "new" );
+  id_srand = rb_intern( "srand" );
+  id_rand = rb_intern( "rand" );
+  id_line_available = rb_intern( "line_available?" );
+  id_char_available = rb_intern( "char_available?" );
+  id_read_line = rb_intern( "read_line" );
+  id_read_char = rb_intern( "read_char" );
+  id_parse = rb_intern( "parse" );
 }
 

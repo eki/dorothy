@@ -178,8 +178,29 @@ void z_or( zmachine *zm ) {
   p_store( zm, (zword) (zm->zargs[0] | zm->zargs[1]) );
 }
 
-void z_random( zmachine *zm ) {
+/*
+ * z_random, store a random number or set the random number seed.
+ *
+ *      zargs[0] = range (positive) or seed value (negative)
+ *
+ *  TODO:  Use RNG from vying to maintain 1 RNG / Machine
+ */
 
+void z_random( zmachine *zm ) {
+  zword n = 0;
+  short range = zm->zargs[0];
+
+  if( range < 0 ) {
+    rb_funcall( zm->self, id_srand, 1, INT2NUM(-range) );
+  }
+  else if( range == 0 ) {
+    rb_funcall( zm->self, id_srand, 0 );
+  }
+  else {
+    n = NUM2UINT(rb_funcall( zm->self, id_rand, 1, INT2NUM(range) ));
+  }
+
+  p_store( zm, n );
 }
 
 /*

@@ -7,10 +7,13 @@ class TestPrograms < Test::Unit::TestCase
 
   PROGRAMS_DIR = "#{File.dirname( __FILE__ )}/programs"
 
-  Dir["#{PROGRAMS_DIR}/*.z?"].each do |zf|
+  Dir["#{PROGRAMS_DIR}/**/*.z?"].each do |zf|
 
-    fn = "#{PROGRAMS_DIR}/#{File.basename( zf, File.extname( zf ) )}.inf"
-    tm = "test_#{File.basename( fn, '.inf' )}"
+
+    fn = "#{File.dirname( zf )}/#{File.basename( zf, File.extname( zf ) )}.inf"
+
+    zf =~ /#{PROGRAMS_DIR}\/(.*\w+)\.z./
+    tm = "test_#{$1.gsub( /\//, '_' )}"
 
     output_yaml, reading_output_yaml = "", nil
     input_yaml, reading_input_yaml = "", nil
@@ -54,22 +57,28 @@ class TestPrograms < Test::Unit::TestCase
     input.each { |s| m.keyboard << s }  if input
 
     i = 0
-   
-    until m.finished? 
-      m.step while m.output.empty? && ! m.finished?
+  
+    begin 
+      until m.finished? 
+        m.step while m.output.empty? && ! m.finished?
 
-      while s = m.output.shift
+        while s = m.output.shift
 
-        assert( i < expected_output.length, "unexpected output #{s}, " +
-                "only expecting #{expected_output.length} tokens.  " +
-                "Trace: \n#{m.trace.join}" )
+          assert( i < expected_output.length, "unexpected output #{s}, " +
+                  "only expecting #{expected_output.length} tokens.  " +
+                  "Trace: \n#{m.trace.join}" )
 
-        assert_equal( expected_output[i], s, 
-                      "output (token #{i}) doesn't match expected.  " +
-                      "Trace: \n#{m.trace.join}" )
+          assert_equal( expected_output[i], s, 
+                        "output (token #{i}) doesn't match expected.  " +
+                        "Trace: \n#{m.trace.join}" )
 
-        i += 1
+          i += 1
+        end
       end
+    rescue RuntimeError => e
+      puts e
+      puts m.trace.join
+      fail "Unexpected Error!"
     end
 
     assert_equal( expected_output.length, i,

@@ -35,6 +35,10 @@ task :compile_test_programs do
   Dir['test/dorothy/programs/*.inf'].each do |f|
     sh %{cd test/dorothy/programs && inform #{File.basename( f )}}
   end
+
+  Dir['test/dorothy/programs/v3/*.inf'].each do |f|
+    sh %{cd test/dorothy/programs/v3 && inform -v3 #{File.basename( f )}}
+  end
 end
 
 Rake::TestTask.new do |t|

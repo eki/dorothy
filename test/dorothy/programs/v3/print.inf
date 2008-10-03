@@ -1,0 +1,41 @@
+Array foo --> "bar";
+Global dude = 'yo!';
+Global longer = 'this is a longer string';
+Constant longest = "this is a really really long string";
+
+[main x;
+  @print "hello world!";
+  @new_line;
+  @call f -> x;
+  @print_char 97;
+
+  @loadw foo 0 -> x;
+  @print_char x;
+  @loadw foo 1 -> x;
+  @print_char x;
+  @loadw foo 2 -> x;
+  @print_char x;
+
+  @print_addr dude;
+  @print_addr longer;
+  @print_paddr longest;
+];
+
+[f;
+  @print_ret "print and return";
+];
+
+! output:
+! ---
+! - "hello world!"
+! - "\n"
+! - "print and return"
+! - "\n"
+! - "a"
+! - "b"
+! - "a"
+! - "r"
+! - "yo!"
+! - "this"
+! - "this is a really really long string"
+

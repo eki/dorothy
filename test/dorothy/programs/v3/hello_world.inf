@@ -1,0 +1,9 @@
+[main;
+@print "hello world!";
+@rtrue;
+];
+
+! output:
+! ---
+! - hello world!
+

@@ -1,0 +1,44 @@
+
+Property bar 11;
+Property baz 12;
+Property ary 13;
+
+Object Foo "Foo"
+  with bar 2,
+       baz "baz",
+       ary 1 2 3 4;
+
+[main x;
+  print (name) Foo;
+  print Foo.bar;
+
+  @get_prop_addr Foo bar -> x;
+  @storew x 0 7;
+  print Foo.bar;
+
+  print (string) Foo.baz;
+
+  @get_prop_addr Foo bar -> x;
+  @get_prop_len x -> x;
+  @print_num x;
+
+  @get_prop_addr Foo baz -> x;
+  @get_prop_len x -> x;
+  @print_num x;
+
+  @get_prop_addr Foo ary -> x;
+  @get_prop_len x -> x;
+  @print_num x;
+];
+
+
+! output:
+! ---
+! - "Foo"
+! - 2
+! - 7
+! - "baz"
+! - 2
+! - 2
+! - 8
+

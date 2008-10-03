@@ -1,0 +1,62 @@
+Attribute bar;
+Attribute baz;
+
+Object Foo "Foo"
+  has ~bar baz;
+
+[main x;
+  @print_obj Foo;
+
+  @call f Foo bar -> x;
+
+  @set_attr Foo bar;
+  @call f Foo bar -> x;
+
+  @set_attr Foo bar;
+  @call f Foo bar -> x;
+
+  @clear_attr Foo bar;
+  @call f Foo bar -> x;
+
+  @clear_attr Foo bar;
+  @call f Foo bar -> x;
+
+  @call f Foo baz -> x;
+  @call f Foo bar -> x;
+
+  @clear_attr Foo baz;
+  @call f Foo baz -> x;
+  @call f Foo bar -> x;
+
+  @set_attr Foo baz;
+  @call f Foo baz -> x;
+  @call f Foo bar -> x;
+
+];
+
+[f obj attr;
+  @test_attr obj attr ?Set;
+  print "clear";
+  rfalse;
+
+  .Set;
+  print "set";
+  rtrue;
+];
+
+
+! output:
+! ---
+! - "Foo"
+! - "clear"
+! - "set"
+! - "set"
+! - "clear"
+! - "clear"
+! - "set"
+! - "clear"
+! - "clear"
+! - "clear"
+! - "set"
+! - "clear"
+

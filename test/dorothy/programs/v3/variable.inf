@@ -1,0 +1,29 @@
+
+Constant FOO=12;
+Constant BAZ=720;
+
+Global bar=37;
+
+[main x y;
+  @store x 5;
+  @print_num x;
+  @load x y;
+  @print_num y;
+
+  @print_num FOO;
+  @print_num bar;
+  @print_num BAZ;
+
+  @load x bar;
+  @print_num bar;
+];
+
+! output:
+! ---
+! - 5
+! - 5
+! - 12
+! - 37
+! - 720
+! - 5
+

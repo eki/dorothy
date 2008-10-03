@@ -1,0 +1,13 @@
+[main;
+@verify ?Great;
+@print "bad checksum?";
+
+.Great;
+@print "hello world!";
+@rtrue;
+];
+
+! output:
+! ---
+! - hello world!
+

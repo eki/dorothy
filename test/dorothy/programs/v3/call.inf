@@ -1,0 +1,42 @@
+[main x;
+  @print "entering main";
+  @call f1 -> x;
+  @print_num x;
+
+  @call f2 -> x;
+  @print_num x;
+
+  @call f3 -> x;
+  @print_num x;
+
+  @call f4 -> x;
+  @print_num x;
+];
+
+[f1;
+  @print_ret "entering and leaving f1";
+];
+
+[f2;
+  @rtrue;
+];
+
+[f3;
+  @rfalse;
+];
+
+[f4;
+  @ret 42;
+];
+
+
+! output:
+! ---
+! - "entering main"
+! - "entering and leaving f1"
+! - "\n"
+! - 1
+! - 1
+! - 0
+! - 42
+

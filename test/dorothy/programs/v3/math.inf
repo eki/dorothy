@@ -1,0 +1,60 @@
+[main x;
+@add 2 3 -> x;
+@print_num x;
+@add x x -> x;
+@print_num x;
+@add x (-4) -> x;
+@print_num x;
+@div x 3 -> x;
+@print_num x;
+@mul x 5 -> x;
+@print_num x;
+@add x 2 -> x;
+@print_num x;
+@div x 5 -> x;
+@print_num x;
+@mul x 10 -> x;
+@print_num x;
+@sub x 2 -> x;
+@print_num x;
+@mod x 5 -> x;
+@print_num x;
+@mul x (-4) -> x;
+@print_num x;
+@div x (-2) -> x;
+@print_num x;
+@or x 20 -> x;
+@print_num x;
+@and x 5 -> x;
+@print_num x;
+@not x -> x;
+@print_num x;
+@not x -> x;
+@print_num x;
+@dec x;
+@print_num x;
+@inc x;
+@print_num x;
+];
+
+! output:
+! ---
+! - 5
+! - 10
+! - 6
+! - 2
+! - 10
+! - 12
+! - 2
+! - 20
+! - 18
+! - 3
+! - -12
+! - 6
+! - 22
+! - 4
+! - -5
+! - 4
+! - 3
+! - 4
+

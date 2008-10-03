@@ -1,0 +1,13 @@
+[main;
+@nop;
+@nop;
+@nop;
+@nop;
+@print "hello world!";
+@rtrue;
+];
+
+! output:
+! ---
+! - hello world!
+

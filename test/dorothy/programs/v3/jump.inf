@@ -1,0 +1,83 @@
+[main x;
+@add 2 3 -> x;
+@print_num x;
+@je x 5 ?Branch1;
+@print "doh!";
+.Branch1;
+@print "ok";
+@je x 7 ?EarlyExit;
+@print "ok";
+@jg x 6 ?EarlyExit;
+@print "ok";
+@jl x 4 ?EarlyExit;
+@print "ok";
+@jg x 4 ?Branch2;
+@print "doh!";
+.Branch2;
+@print "ok";
+@jl x 6 ?Branch3;
+@print "doh!";
+.Branch3;
+@print "ok";
+@jz x ?EarlyExit;
+@print "ok";
+@sub x 5 -> x;
+@print_num x;
+@jz x ?Branch4;
+@print "doh!";
+.Branch4;
+@print "ok";
+@inc_chk x 1 ?EarlyExit;
+@print "ok";
+@inc_chk x 1 ?Branch5;
+@print "doh!";
+.Branch5;
+@print "ok";
+@dec_chk x 1 ?EarlyExit;
+@print "ok";
+@dec_chk x 1 ?Branch6;
+@print "doh!";
+.Branch6;
+@print "ok";
+@print_num x;
+@test x 1 ?EarlyExit;
+@print "ok";
+@add x 2 -> x;
+@test x 1 ?EarlyExit;
+@print "ok";
+@add x 1 -> x;
+@test x 1 ?Branch7;
+@print "doh";
+.Branch7;
+@print "ok";
+@print_num x;
+jump Branch4;
+
+.EarlyExit;
+@print "doh!";
+];
+
+! output:
+! ---
+! - 5
+! - "ok"
+! - "ok"
+! - "ok"
+! - "ok"
+! - "ok"
+! - "ok"
+! - "ok"
+! - 0
+! - "ok"
+! - "ok"
+! - "ok"
+! - "ok"
+! - "ok"
+! - 0
+! - "ok"
+! - "ok"
+! - "ok"
+! - 3
+! - "ok"
+! - "doh!"
+

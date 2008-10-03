@@ -9,7 +9,7 @@ include FileUtils
 ### cleanup tasks
 ###
 
-CLEAN.include( 'ext/**/*.o', 'ext/**/*.so', 'test/**/*.z5' )
+CLEAN.include( 'ext/**/*.o', 'ext/**/*.so', 'test/**/*.z?' )
 
 ###
 ### task to compile the extension

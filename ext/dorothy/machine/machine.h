@@ -492,16 +492,6 @@ struct smachine {
 
   int finished;
 
-  z_op op0_opcodes[0x10];
-  z_op op1_opcodes[0x10];
-  z_op var_opcodes[0x40];
-  z_op ext_opcodes[0x1d];
-
-  char* op0_opcode_names[0x10];
-  char* op1_opcode_names[0x10];
-  char* var_opcode_names[0x40];
-  char* ext_opcode_names[0x1d];
-
   VALUE self;
 };
 
@@ -703,4 +693,14 @@ void z_tokenise( zmachine * );
 void z_verify( zmachine * );
 void z_window_size( zmachine * );
 void z_window_style( zmachine * );
+
+z_op op0_opcodes[0x10];
+z_op op1_opcodes[0x10];
+z_op var_opcodes[0x40];
+z_op ext_opcodes[0x1d];
+
+char* op0_opcode_names[0x10];
+char* op1_opcode_names[0x10];
+char* var_opcode_names[0x40];
+char* ext_opcode_names[0x1d];
 

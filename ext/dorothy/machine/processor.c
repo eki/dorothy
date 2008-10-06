@@ -87,28 +87,41 @@ bool p_step( zmachine *zm ) {
     load_operand( zm, (zbyte) (opcode & 0x20) ? 2 : 1 );
 
     trace( zm, "  (%d) (var:%d) Executing %s\n", pc, (opcode & 0x1f),
-           zm->var_opcode_names[opcode & 0x1f] );
+           var_opcode_names[opcode & 0x1f] );
 
-    zm->var_opcodes[opcode & 0x1f]( zm );
+    var_opcodes[opcode & 0x1f]( zm );
 
   }
   else if( opcode < 0xb0 ) {
 
     load_operand( zm, (zbyte) (opcode >> 4) );
 
-    trace( zm, "  (%d) (op1:%d) Executing %s\n", pc, (opcode & 0x0f),
-           zm->op1_opcode_names[opcode & 0x0f] );
+    if( h_version(zm) < 5 && (opcode & 0x0f) == 0x0f ) {  
+      trace( zm, " (%d) (op0:%d) Executing not", pc, opcode );
 
-    zm->op1_opcodes[opcode & 0x0f]( zm );
+      z_not( zm );  /* z_not has been replaced at this opcode on */
+                    /* newer z-machines                          */
+    }
+    else {
+      trace( zm, "  (%d) (op1:%d) Executing %s\n", pc, (opcode & 0x0f),
+             op1_opcode_names[opcode & 0x0f] );
 
+      op1_opcodes[opcode & 0x0f]( zm );
+    }
   } 
   else if( opcode < 0xc0 ) {
 
-    trace( zm, "  (%d) (op0:%d) Executing %s\n", pc, (opcode - 0xb0),
-           zm->op0_opcode_names[opcode - 0xb0] );
+    if( h_version(zm) < 5 && opcode == 185 ) {
+      trace( zm, " (%d) (op0:185) Executing pop", pc );
 
-    zm->op0_opcodes[opcode - 0xb0]( zm );
+      z_pop( zm );  /* z_pop doesn't exist on newer z-machines */
+    }
+    else {
+      trace( zm, "  (%d) (op0:%d) Executing %s\n", pc, (opcode - 0xb0),
+             op0_opcode_names[opcode - 0xb0] );
 
+      op0_opcodes[opcode - 0xb0]( zm );
+    }
   } 
   else {
     if (opcode == 0xec || opcode == 0xfa) { 
@@ -122,9 +135,9 @@ bool p_step( zmachine *zm ) {
     }
 
     trace( zm, "  (%d) (var:%d) Executing %s\n", pc, (opcode - 0xc0),
-           zm->var_opcode_names[opcode - 0xc0] );
+           var_opcode_names[opcode - 0xc0] );
 
-    zm->var_opcodes[opcode - 0xc0]( zm );
+    var_opcodes[opcode - 0xc0]( zm );
   }
 /*
   zm->finished++;

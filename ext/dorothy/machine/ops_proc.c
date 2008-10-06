@@ -125,9 +125,9 @@ void z_extended( zmachine *zm ) {
 
   if( opcode < 0x1d ) {
     trace( zm, "  (%d) (ext:%d) Executing %s\n", pc, opcode,
-           zm->ext_opcode_names[opcode] );
+           ext_opcode_names[opcode] );
 
-    zm->ext_opcodes[opcode]( zm );
+    ext_opcodes[opcode]( zm );
   }
   else {
     runtime_error( "Attempt to execute unknown extended opcode" );

@@ -12,6 +12,15 @@ void Init_machine() {
   rb_define_method( Machine, "read_word", machine_read_word, 1 );
   rb_define_method( Machine, "read_string", machine_read_string, 1 );
 
+  Program = rb_define_class( "Program", rb_cObject );
+  rb_define_alloc_func( Program, program_alloc );
+  rb_define_method( Program, "initialize", program_initialize, 1 );
+  rb_define_method( Program, "length", program_length, 0 );
+  rb_define_method( Program, "checksum", program_checksum, 0 );
+  rb_define_method( Program, "version", program_version, 0 );
+  rb_define_method( Program, "release", program_release, 0 );
+  rb_define_method( Program, "serial", program_serial, 0 );
+
   Header = rb_define_class( "Header", rb_cObject );
 
   rb_define_method( Header, "version", header_version, 0 );

@@ -12,6 +12,7 @@ VALUE Header;
 VALUE Dictionary;
 VALUE Entry;
 VALUE InputStream;
+VALUE Program;
 
 
 /* Prototypes */
@@ -26,6 +27,15 @@ VALUE machine_read_string_array( VALUE self, VALUE addr, VALUE length );
 VALUE machine_step( VALUE self );
 VALUE machine_finished( VALUE self );
 void  machine_free( void * );
+
+VALUE program_alloc( VALUE klass );
+VALUE program_initialize( VALUE self, VALUE filename );
+VALUE program_length( VALUE self );
+VALUE program_checksum( VALUE self );
+VALUE program_version( VALUE self );
+VALUE program_release( VALUE self );
+VALUE program_serial( VALUE self );
+void  program_free( void * );
 
 VALUE header_version( VALUE self );
 
@@ -327,7 +337,8 @@ ID id_new, id_srand, id_rand,
    *    the header, not individual zbytes and zwords.
    */
 
-#define h_version(vm) read_byte( zm, 0x00 )
+#define h_version(zm) (read_byte( zm, 0x00 ))
+#define h_release(zm) (read_word( zm, 0x02 ))
 #define h_status_line_score(zm) ((read_byte( zm, 0x01 ) & 0x02) == 0)
 #define h_status_line_time(zm)  ((read_byte( zm, 0x01 ) & 0x02) == 1)
 #define h_story_split(zm)       (read_byte( zm, 0x01 ) & 0x04)
@@ -469,6 +480,20 @@ typedef unsigned short zword;
 typedef unsigned char zchar;
 
 typedef unsigned short zaddr;
+
+struct sprogram;
+typedef struct sprogram zprogram;
+
+struct sprogram {
+  zbyte version;
+  zword release;
+  char serial[6];
+  
+  long length;
+  zword checksum;
+
+  zbyte *program;
+};
 
 struct smachine;
 typedef struct smachine zmachine;

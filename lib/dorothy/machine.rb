@@ -1,5 +1,5 @@
 
-class Machine
+class Z::Machine
 
   attr_reader :header, :program, :output, :trace, :keyboard
 

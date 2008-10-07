@@ -1,5 +1,5 @@
 
-class Header
+class Z::Header
   attr_reader :machine
 
   def initialize( machine )

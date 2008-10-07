@@ -7,6 +7,7 @@
 
 /* Classes */
 
+VALUE Z;
 VALUE Machine;
 VALUE Header;
 VALUE Dictionary;

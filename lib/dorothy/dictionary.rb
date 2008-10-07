@@ -1,5 +1,5 @@
 
-class Dictionary
+class Z::Dictionary
   attr_reader :program, :addr, :entries, :entry_length, :word_separators
 
   private :load

@@ -52,7 +52,7 @@ class TestPrograms < Test::Unit::TestCase
 
 
   def __test_program( filename, expected_output, input )
-    m = Machine.new( filename )
+    m = Z::Machine.new( filename )
 
     input.each { |s| m.keyboard << s }  if input
 

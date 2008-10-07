@@ -2,7 +2,9 @@
 #include "machine.h"
 
 void Init_machine() {
-  Machine = rb_define_class( "Machine", rb_cObject );
+  Z = rb_define_module( "Z" );
+
+  Machine = rb_define_class_under( Z, "Machine", rb_cObject );
   rb_define_alloc_func( Machine, machine_alloc );
   rb_define_method( Machine, "initialize", machine_initialize, 1 );
   rb_define_method( Machine, "step", machine_step, 0 );
@@ -11,7 +13,7 @@ void Init_machine() {
   rb_define_method( Machine, "read_word", machine_read_word, 1 );
   rb_define_method( Machine, "read_string", machine_read_string, 1 );
 
-  Program = rb_define_class( "Program", rb_cObject );
+  Program = rb_define_class_under( Z, "Program", rb_cObject );
   rb_define_alloc_func( Program, program_alloc );
   rb_define_method( Program, "initialize", program_initialize, 1 );
   rb_define_method( Program, "length", program_length, 0 );
@@ -20,7 +22,7 @@ void Init_machine() {
   rb_define_method( Program, "release", program_release, 0 );
   rb_define_method( Program, "serial", program_serial, 0 );
 
-  Header = rb_define_class( "Header", rb_cObject );
+  Header = rb_define_class_under( Z, "Header", rb_cObject );
 
   rb_define_method( Header, "version", header_version, 0 );
 
@@ -201,7 +203,7 @@ void Init_machine() {
   rb_define_method( Header, "standard_minor=", header_set_standard_minor, 1 );
 
 
-  Dictionary = rb_define_class( "Dictionary", rb_cObject );
+  Dictionary = rb_define_class_under( Z, "Dictionary", rb_cObject );
   
   rb_define_method( Dictionary, "load", dictionary_load, 0 );
 

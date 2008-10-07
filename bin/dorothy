@@ -4,7 +4,7 @@ require 'dorothy'
 
 if ARGV.first
 
-  m = Machine.new( ARGV.first )
+  m = Z::Machine.new( ARGV.first )
 
   until m.finished?
     if ! m.step

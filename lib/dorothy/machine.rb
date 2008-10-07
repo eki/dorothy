@@ -1,7 +1,11 @@
 
 class Machine
 
-  attr_reader :header, :dictionary, :output, :trace, :keyboard
+  attr_reader :header, :program, :output, :trace, :keyboard
+
+  def dictionary
+    program.dictionary
+  end
 
   def run
     loop do

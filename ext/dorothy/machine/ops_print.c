@@ -43,7 +43,7 @@ void z_print_addr( zmachine *zm ) {
  */
 
 void z_print_char( zmachine *zm ) {
-  zbyte zs[2] = { translate_from_zscii( zm, zm->zargs[0] ), 0 };
+  zbyte zs[2] = { translate_from_zscii( zm->m, zm->zargs[0] ), 0 };
   print_cstr( zm, zs );
 }
 

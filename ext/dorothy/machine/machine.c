@@ -15,59 +15,43 @@ VALUE machine_alloc( VALUE klass ) {
  *  Initialize the machine.  Loads a story file into memory.
  */
 
-VALUE machine_initialize( VALUE self, VALUE filename ) {
+VALUE machine_initialize( VALUE self, VALUE program ) {
   VALUE header;
-  long i;
-  char *fn = StringValuePtr( filename );
-  FILE *fp;
   zmachine *zm;
+  zprogram *zp;
 
   Data_Get_Struct( self, zmachine, zm );
 
   zm->self = self;
 
-  fp = fopen( fn, "rb" );
-
-  if( fp == NULL ) {
-    rb_raise( rb_eRuntimeError, "Unable to open file: %s", fn );
+  if( ! RTEST(rb_obj_is_instance_of( program, Program )) ) {
+    program = rb_funcall( Program, id_new, 1, program );
   }
 
-  zm->program = ALLOC_N( zbyte, 64 );
+  Data_Get_Struct( program, zprogram, zp );
 
-  if( fread( zm->program, 1, 64, fp ) != 64 ) {
-    fclose( fp );
-    rb_raise( rb_eRuntimeError, "Error reading header: %s", fn );
-  }
+  zm->zp = zp;
+  zm->m = ALLOC( zmemory );
 
-  /* Set the actual program length (don't trust the program header) */
+  zm->m->m_dynamic = ALLOC_N(zbyte, zp->m->dynamic_length);
+  MEMCPY( zm->m->m_dynamic, zp->m->m_dynamic, zbyte, zp->m->dynamic_length);
 
-  fseek( fp, 0, SEEK_END );
-  zm->program_length = ftell( fp );
-  fseek( fp, 0, SEEK_SET );
-
-  /* Read the entire program into memory */
-
-  REALLOC_N( zm->program, zbyte, zm->program_length );
-
-  if( fread( zm->program, 1, zm->program_length, fp ) != zm->program_length ) {
-    fclose( fp );
-    rb_raise( rb_eRuntimeError, "Error reading program: %s", fn );
-  }
-
-  fclose( fp );
-
-  zm->program_checksum = 0;
-  for( i = 64; i < zm->program_length; i++ ) {
-    zm->program_checksum += zm->program[i];
-  }
+  zm->m->m_static = zp->m->m_static;
 
   zm->finished = 0;
 
   zm->sp = zm->fp = zm->stack + STACK_SIZE;
   zm->frame_count = 0;
 
+  zm->version = zp->version;
+
+  zm->m->length = zp->m->length;
+  zm->m->dynamic_length = zp->m->dynamic_length;
+  zm->m->static_length = zp->m->static_length;
 
   /* Now that the program is loaded, finish setting up the Ruby stuff */
+
+  rb_iv_set( self, "@program", program );
 
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
 
@@ -77,11 +61,6 @@ VALUE machine_initialize( VALUE self, VALUE filename ) {
     rb_funcall( InputStream, id_new, 1, UINT2NUM(0) ) );
 
   rb_iv_set( self, "@trace", rb_ary_new() );
-
-  rb_iv_set( self, "@dictionary", 
-    rb_funcall( Dictionary, id_new, 2, self, UINT2NUM(h_dictionary(zm)) ) );
-
-
 }
 
 /*
@@ -92,18 +71,6 @@ void machine_free( void *p ) {
   free( p );
 }
 
-/*
- *  Get the actual program_length (may be different from the length reported
- *  by the header.
- */
-
-VALUE machine_program_length( VALUE self ) {
-  zmachine *zm;
-
-  Data_Get_Struct( self, zmachine, zm );
-
-  return INT2NUM(zm->program_length);
-}
 
 VALUE machine_step( VALUE self ) {
   zmachine *zm;
@@ -156,21 +123,13 @@ VALUE machine_read_string_array( VALUE self, VALUE addr, VALUE length ) {
   int i;
 
   for( i = 0; i < len; i++ ) {
-    *c = translate_from_zscii( zm, read_byte( zm, a + i ) );
+    *c = translate_from_zscii( zm->m, read_byte( zm, a + i ) );
 
     rb_str_append( str, rb_str_new2( c ) );
   }
 
   return str;
 }
-
-/*
- *  This is the start of code that supports decoding strings from the
- *  Z-machine into Ruby Strings.  This is a several step process.  The
- *  strings are stored in z-encoded format.  After they've been decoded
- *  they need to be translated from zscii to ascii (technically they should
- *  be converted to unicode...).
- */
 
 static zchar zscii_to_latin1[] = {
     0xe4, 0xf6, 0xfc, 0xc4, 0xd6, 0xdc, 0xdf, 0xbb,
@@ -184,7 +143,11 @@ static zchar zscii_to_latin1[] = {
     0xa3, 0x00, 0x00, 0xa1, 0xbf
 };
 
-zchar translate_from_zscii( zmachine *zm, zbyte c ) {   
+zchar translate_from_zscii( zmemory *m, zbyte c ) {   
+  memory_wrapper mw;
+  memory_wrapper *zm = &mw;
+  zm->m = m;
+
   zaddr unicode = h_unicode_table( zm );
 
   if( c == 0xfc ) {
@@ -283,14 +246,17 @@ zbyte translate_to_zscii( zmachine *zm, zchar c ) {
   return c;
 }
 
-static zchar alphabet( zmachine *zm, int set, int index ) {   
+zchar alphabet( zmemory *m, int set, int index ) {   
+  memory_wrapper mw;
+  memory_wrapper *zm = &mw;
+  zm->m = m;
+
   int version = h_version( zm );
   zaddr alphabet = h_alphabet_table( zm );
 
   if( alphabet != 0 ) {      /* game uses its own alphabet */
-      trace( zm, "Game uses its own alphabet!\n" );
       zbyte c = read_byte( zm, alphabet + set * 26 + index );
-      return translate_from_zscii( zm, c );
+      return translate_from_zscii( zm->m, c );
 
   } 
   else {                    /* game uses default alphabet */
@@ -379,7 +345,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
             trace( zm, "  (newline) read c: %s\n", c ); 
           }
           else if( *c >= 6 ) {
-            *c = alphabet( zm, shift_state, *c - 6 );
+            *c = alphabet( zm->m, shift_state, *c - 6 );
             rb_str_append( str, rb_str_new2( c ) );
 
             trace( zm, "  (alpha) read c: %s\n", c ); 
@@ -433,7 +399,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
 
         case 3:
 
-          *c = translate_from_zscii( zm, (zbyte) ((last_c << 5) | *c) );
+          *c = translate_from_zscii( zm->m, (zbyte) ((last_c << 5) | *c) );
           rb_str_append( str, rb_str_new2( c ) );
 
           trace( zm, "  (10bit) read c: %s\n", c ); 

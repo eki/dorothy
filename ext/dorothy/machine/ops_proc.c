@@ -202,11 +202,11 @@ void z_jump( zmachine *zm ) {
 
   pc += (short) zm->zargs[0] - 2;
 
-  if( pc >= zm->program_length ) {
+  if( pc >= zm->m->length ) {
     runtime_error( "jump past end of memory" );
   }
 
-  zm->pcp = zm->program + pc;
+  zm->pcp = zm->m->m_static + pc - zm->m->dynamic_length;
 }
 
 /*

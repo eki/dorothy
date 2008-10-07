@@ -1,5 +1,6 @@
 
 class Program
+  attr_reader :dictionary
 
   def self.new( file )
     @programs ||= {}

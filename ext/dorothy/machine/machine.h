@@ -19,7 +19,6 @@ VALUE Program;
 
 VALUE machine_alloc( VALUE klass );
 VALUE machine_initialize( VALUE self, VALUE filename );
-VALUE machine_program_length( VALUE self );
 VALUE machine_read_byte( VALUE self, VALUE addr );
 VALUE machine_read_word( VALUE self, VALUE addr );
 VALUE machine_read_string( VALUE self, VALUE addr );
@@ -35,6 +34,7 @@ VALUE program_checksum( VALUE self );
 VALUE program_version( VALUE self );
 VALUE program_release( VALUE self );
 VALUE program_serial( VALUE self );
+VALUE program_read_string( VALUE self, VALUE addr );
 void  program_free( void * );
 
 VALUE header_version( VALUE self );
@@ -159,7 +159,7 @@ VALUE dictionary_load( VALUE self );
 
 ID id_new, id_srand, id_rand,
    id_line_available, id_char_available, id_read_line, id_read_char,
-   id_parse;
+   id_dictionary, id_parse;
 
 
 /*** Constants ***/
@@ -308,20 +308,28 @@ ID id_new, id_srand, id_rand,
 
 /*** Access data from the program the machine is running. */
 
-#define read_byte(zm,addr) (zm->program[(addr)])
+#define mem(zm, addr) \
+  (((addr) < zm->m->dynamic_length) ? zm->m->m_dynamic : zm->m->m_static)
+
+#define maddr(zm, addr) \
+  (((addr) < zm->m->dynamic_length) ? (addr) : (addr) - zm->m->dynamic_length)
+
+#define read_byte(zm,addr) \
+  (mem(zm,addr)[maddr(zm,addr)])
 
 #define read_word(zm,addr) \
-  (((zword) zm->program[(addr)] << 8) | zm->program[(addr)+1])
+  (((zword) read_byte(zm,(addr)) << 8) | read_byte(zm, (addr)+1))
 
 #define read_n(zm,addr,n) \
   ((n) == 1 ? read_byte( zm, (addr) ) : read_word( zm, (addr) ))
 
-#define write_byte(zm,addr,value) (zm->program[(addr)] = (value))
+#define write_byte(zm,addr,value) (read_byte(zm,addr) = (value))
 
-#define write_word(zm,addr,value) { zm->program[(addr)] = (value) >> 8; \
-                                    zm->program[(addr)+1] = (value) & 0xff; }
+#define write_word(zm,addr,value) \
+  { read_byte(zm,addr)   = (value) >> 8; \
+    read_byte(zm,addr+1) = (value) & 0xff; }
 
-#define PC(zm) (zm->pcp - zm->program)
+#define PC(zm) (zm->pcp - zm->m->m_static + zm->m->dynamic_length)
 
 #define m_output(zm) (rb_iv_get( zm->self, "@output" ))
 #define print_cstr(zm,str) (rb_ary_push( m_output( zm ), rb_str_new2( str ) ))
@@ -481,6 +489,18 @@ typedef unsigned char zchar;
 
 typedef unsigned short zaddr;
 
+struct smemory;
+typedef struct smemory zmemory;
+
+struct smemory {
+  long length;
+  long dynamic_length;
+  long static_length;
+
+  zbyte *m_dynamic;
+  zbyte *m_static;
+};
+
 struct sprogram;
 typedef struct sprogram zprogram;
 
@@ -488,11 +508,10 @@ struct sprogram {
   zbyte version;
   zword release;
   char serial[6];
-  
-  long length;
-  zword checksum;
 
-  zbyte *program;
+  zmemory *m;
+  
+  zword checksum;
 };
 
 struct smachine;
@@ -501,10 +520,11 @@ typedef struct smachine zmachine;
 typedef void (*z_op)( zmachine * );
 
 struct smachine {
-  long program_length;
-  zword program_checksum;
-  
-  zbyte *program;
+  zbyte version;
+
+  zprogram *zp;
+  zmemory *m;
+
   zbyte *pcp;
 
   zword stack[STACK_SIZE];
@@ -601,8 +621,13 @@ void storeb( zmachine *zm, zaddr addr, zbyte value );
 
 /** Text processing **/
 
-zchar translate_from_zscii( zmachine *zm, zbyte c );
+typedef struct {
+  zmemory *m;
+} memory_wrapper;
+
+zchar translate_from_zscii( zmemory *zm, zbyte c );
 zbyte translate_to_zscii( zmachine *zm, zchar c );
+zchar alphabet( zmemory *zm, int set, int index );
 
 /* Ops */
 

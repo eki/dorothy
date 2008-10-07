@@ -1,11 +1,11 @@
 
 class Dictionary
-  attr_reader :machine, :addr, :entries, :entry_length, :word_separators
+  attr_reader :program, :addr, :entries, :entry_length, :word_separators
 
   private :load
 
-  def initialize( machine, addr )
-    @machine, @addr = machine, addr
+  def initialize( program, addr )
+    @program, @addr = program, addr
     load
   end
 

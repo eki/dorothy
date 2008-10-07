@@ -137,6 +137,6 @@ void z_storew( zmachine *zm ) {
  */
 
 void z_verify( zmachine *zm ) {
-  p_branch( zm, zm->program_checksum == h_program_checksum(zm) );
+  p_branch( zm, zm->zp->checksum == h_program_checksum(zm) );
 }
 

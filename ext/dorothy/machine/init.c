@@ -5,7 +5,6 @@ void Init_machine() {
   Machine = rb_define_class( "Machine", rb_cObject );
   rb_define_alloc_func( Machine, machine_alloc );
   rb_define_method( Machine, "initialize", machine_initialize, 1 );
-  rb_define_method( Machine, "program_length", machine_program_length, 0 );
   rb_define_method( Machine, "step", machine_step, 0 );
   rb_define_method( Machine, "finished?", machine_finished, 0 );
   rb_define_method( Machine, "read_byte", machine_read_byte, 1 );
@@ -217,6 +216,7 @@ void Init_machine() {
   id_char_available = rb_intern( "char_available?" );
   id_read_line = rb_intern( "read_line" );
   id_read_char = rb_intern( "read_char" );
+  id_dictionary = rb_intern( "dictionary" );
   id_parse = rb_intern( "parse" );
 
   /* setup the z_op arrays */

@@ -55,7 +55,8 @@ bool p_step( zmachine *zm ) {
   if( zm->finished == 0 ) {
     zm->finished++;
     if( h_version(zm) != V6 ) {
-      zm->pcp = zm->program + h_initial_program_counter(zm);
+      zm->pcp = zm->m->m_static + h_initial_program_counter(zm) -
+                zm->m->dynamic_length;
       trace( zm, "first step (pc:%d)\n", PC(zm) );
     } 
     else {
@@ -191,11 +192,11 @@ void p_call( zmachine *zm, zword routine, int argc, zword *args, int ct ) {
     pc = (long) routine << 3;
   }
 
-  if( pc >= zm->program_length ) {
+  if( pc >= zm->m->length ) {
     runtime_error( "invalid call address" );
   }
 
-  zm->pcp = zm->program + pc;
+  zm->pcp = zm->m->m_static + pc - zm->m->dynamic_length;
 
   /* Initialise local variables */
 
@@ -325,7 +326,7 @@ void p_ret( zmachine *zm, zword value ) {
   pc = *zm->sp++;
   pc = ((long) *zm->sp++ << 9) | pc;
 
-  zm->pcp = zm->program + pc;
+  zm->pcp = zm->m->m_static + pc - zm->m->dynamic_length;
 
   /* Handle resulting value */
 
@@ -391,7 +392,7 @@ void p_branch( zmachine *zm, bool flag ) {
 
     if (offset > 1) {                      /* normal branch */
       pc = PC(zm) + ((short) offset - 2);
-      zm->pcp = zm->program + pc;
+      zm->pcp = zm->m->m_static + pc - zm->m->dynamic_length;
     } 
     else {
       p_ret( zm, offset );                 /* special case, return 0 or 1 */

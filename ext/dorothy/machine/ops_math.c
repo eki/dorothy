@@ -183,21 +183,24 @@ void z_or( zmachine *zm ) {
  *
  *      zargs[0] = range (positive) or seed value (negative)
  *
- *  TODO:  Use RNG from vying to maintain 1 RNG / Machine
+ *  TODO:  RandomNumberGenerator can be re-seeded by this opcode.  The RNG
+ *         code should be updated to serialize / replay correctly when this
+ *         happens.
  */
 
 void z_random( zmachine *zm ) {
   zword n = 0;
   short range = zm->zargs[0];
+  VALUE rng = rb_iv_get( zm->self, "@rng" );
 
   if( range < 0 ) {
-    rb_funcall( zm->self, id_srand, 1, INT2NUM(-range) );
+    rb_funcall( rng, id_srand, 1, INT2NUM(-range) );
   }
   else if( range == 0 ) {
-    rb_funcall( zm->self, id_srand, 0 );
+    rb_funcall( rng, id_srand, 0 );
   }
   else {
-    n = NUM2UINT(rb_funcall( zm->self, id_rand, 1, INT2NUM(range) ));
+    n = NUM2UINT(rb_funcall( rng, id_rand, 1, INT2NUM(range) ));
   }
 
   p_store( zm, n );

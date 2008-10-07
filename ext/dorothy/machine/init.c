@@ -211,6 +211,8 @@ void Init_machine() {
 
   InputStream = rb_define_class_under( Machine, "InputStream", rb_cObject );
 
+  RandomNumberGenerator = rb_define_class( "RandomNumberGenerator", rb_cObject);
+
   id_new = rb_intern( "new" );
   id_srand = rb_intern( "srand" );
   id_rand = rb_intern( "rand" );

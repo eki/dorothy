@@ -61,6 +61,8 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
     rb_funcall( InputStream, id_new, 1, UINT2NUM(0) ) );
 
   rb_iv_set( self, "@trace", rb_ary_new() );
+
+  rb_iv_set( self, "@rng", rb_funcall( RandomNumberGenerator, id_new, 0 ) );
 }
 
 /*

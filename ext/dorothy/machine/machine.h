@@ -14,6 +14,7 @@ VALUE Dictionary;
 VALUE Entry;
 VALUE InputStream;
 VALUE Program;
+VALUE RandomNumberGenerator;
 
 
 /* Prototypes */

@@ -32,6 +32,8 @@ void  machine_free( void * );
 VALUE program_alloc( VALUE klass );
 VALUE program_initialize( VALUE self, VALUE filename );
 VALUE program_length( VALUE self );
+VALUE program_dynamic_length( VALUE self );
+VALUE program_static_length( VALUE self );
 VALUE program_checksum( VALUE self );
 VALUE program_version( VALUE self );
 VALUE program_release( VALUE self );

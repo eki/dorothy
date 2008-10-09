@@ -17,6 +17,8 @@ void Init_machine() {
   rb_define_alloc_func( Program, program_alloc );
   rb_define_method( Program, "initialize", program_initialize, 1 );
   rb_define_method( Program, "length", program_length, 0 );
+  rb_define_method( Program, "dynamic_length", program_dynamic_length, 0 );
+  rb_define_method( Program, "static_length", program_static_length, 0 );
   rb_define_method( Program, "checksum", program_checksum, 0 );
   rb_define_method( Program, "version", program_version, 0 );
   rb_define_method( Program, "release", program_release, 0 );

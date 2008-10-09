@@ -111,6 +111,30 @@ VALUE program_length( VALUE self ) {
 }
 
 /*
+ *  Get the length of dynamic memory.
+ */
+
+VALUE program_dynamic_length( VALUE self ) {
+  zprogram *zp;
+
+  Data_Get_Struct( self, zprogram, zp );
+
+  return INT2NUM(zp->m->dynamic_length);
+}
+
+/*
+ *  Get the length of static memory.
+ */
+
+VALUE program_static_length( VALUE self ) {
+  zprogram *zp;
+
+  Data_Get_Struct( self, zprogram, zp );
+
+  return INT2NUM(zp->m->static_length);
+}
+
+/*
  *  Get the actual program checksum (may be different from the checksum 
  *  reported by the header).
  */

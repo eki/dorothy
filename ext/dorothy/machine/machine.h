@@ -27,6 +27,8 @@ VALUE machine_read_string( VALUE self, VALUE addr );
 VALUE machine_read_string_array( VALUE self, VALUE addr, VALUE length );
 VALUE machine_step( VALUE self );
 VALUE machine_finished( VALUE self );
+VALUE machine_marshal_dump( VALUE self );
+VALUE machine_marshal_load( VALUE self, VALUE ary );
 void  machine_free( void * );
 
 VALUE program_alloc( VALUE klass );

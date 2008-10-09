@@ -87,6 +87,8 @@ VALUE program_initialize( VALUE self, VALUE filename ) {
 
   rb_iv_set( self, "@dictionary", 
     rb_funcall( Dictionary, id_new, 2, self, UINT2NUM(h_dictionary(zp)) ) );
+
+  rb_iv_set( self, "@filename", filename );
 }
 
 /*

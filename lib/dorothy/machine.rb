@@ -49,6 +49,17 @@ class Z::Machine
     def read_char
       @str.slice!( 0, 1 )[0]
     end
+
+    def _dump( depth=-1 )
+      Marshal.dump( [id, @str] )
+    end
+
+    def self._load( str )
+      id, str = Marshal.load( str )
+      stream = new( id )
+      stream << str
+      stream
+    end
   end
 
 end

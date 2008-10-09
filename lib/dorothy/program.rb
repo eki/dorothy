@@ -12,5 +12,13 @@ class Z::Program
     @programs[file] = super
   end
 
+  def _dump( depth=-1 )
+    @filename
+  end
+
+  def self._load( filename )
+    new( filename )
+  end
+
 end
 

@@ -73,6 +73,128 @@ void machine_free( void *p ) {
   free( p );
 }
 
+/*
+ *  Dump the state of this machine to an array that can be reloaded later.
+ */
+
+VALUE machine_marshal_dump( VALUE self ) {
+  VALUE ary = rb_ary_new();
+  VALUE dynamic, stack;
+  long i;
+  zmachine *zm;
+
+  Data_Get_Struct( self, zmachine, zm );
+
+  rb_ary_push( ary, rb_iv_get( self, "@program" ) );
+  rb_ary_push( ary, rb_iv_get( self, "@output" ) );
+  rb_ary_push( ary, rb_iv_get( self, "@keyboard" ) );
+  rb_ary_push( ary, rb_iv_get( self, "@rng" ) );
+
+  dynamic = rb_ary_new();
+  for( i = 0; i < zm->m->dynamic_length; i++ ) {
+    rb_ary_push( dynamic, UINT2NUM(zm->m->m_dynamic[i]) );
+  }
+
+  rb_ary_push( ary, dynamic );
+
+  stack = rb_ary_new();
+  for( i = 0; i < STACK_SIZE; i++ ) {
+    rb_ary_push( stack, UINT2NUM(zm->stack[i]) );
+  }
+
+  rb_ary_push( ary, stack );
+
+  rb_ary_push( ary, UINT2NUM(PC(zm)) );
+  rb_ary_push( ary, UINT2NUM(zm->sp - zm->stack) );
+  rb_ary_push( ary, UINT2NUM(zm->fp - zm->stack) );
+  rb_ary_push( ary, UINT2NUM(zm->frame_count) );
+  rb_ary_push( ary, UINT2NUM(zm->finished) );
+}
+
+/*
+ *  Load the state of a running machine from the given array.
+ */
+
+VALUE machine_marshal_load( VALUE self, VALUE ary ) {
+  printf( "loading machine\n" );
+  VALUE program;
+  VALUE dynamic, stack;
+  long i;
+  zmachine *zm;
+  zprogram *zp;
+
+  Data_Get_Struct( self, zmachine, zm );
+
+  program = rb_ary_entry( ary, 0 );
+
+  Data_Get_Struct( program, zprogram, zp );
+
+  printf( "loaded both structs\n" );
+
+  rb_iv_set( self, "@program", program );
+  rb_iv_set( self, "@output", rb_ary_entry( ary, 1 ) );
+  rb_iv_set( self, "@keyboard", rb_ary_entry( ary, 2 ) );
+  rb_iv_set( self, "@rng", rb_ary_entry( ary, 3 ) );
+
+  printf( "set most instance vars\n" );
+
+  zm->zp = zp;
+  zm->m = ALLOC( zmemory );
+
+  zm->m->m_dynamic = ALLOC_N(zbyte, zp->m->dynamic_length);
+  zm->m->m_static = zp->m->m_static;
+
+  zm->version = zp->version;
+
+  zm->m->length = zp->m->length;
+  zm->m->dynamic_length = zp->m->dynamic_length;
+  zm->m->static_length = zp->m->static_length;
+
+  printf( "halfway done setting up memory\n" );
+
+  dynamic = rb_ary_entry( ary, 4 );
+
+  for( i = 0; i < zm->m->dynamic_length; i++ ) {
+    zm->m->m_dynamic[i] = NUM2UINT(rb_ary_entry( dynamic, i ));
+  } 
+
+  printf( "done with memory\n" );
+
+  stack = rb_ary_entry( ary, 5 );
+
+  for( i = 0; i < STACK_SIZE; i++ ) {
+    zm->stack[i] = NUM2UINT(rb_ary_entry( stack, i ));
+  }
+
+  printf( "done with stack\n" );
+
+  zm->pcp = zm->m->m_static + NUM2UINT(rb_ary_entry( ary, 6 )) - 
+            zm->m->dynamic_length;
+  zm->sp = zm->stack + NUM2UINT(rb_ary_entry( ary, 7 ));
+  zm->fp = zm->stack + NUM2UINT(rb_ary_entry( ary, 8 ));
+  zm->frame_count = NUM2UINT(rb_ary_entry( ary, 9 ));
+  zm->finished = NUM2UINT(rb_ary_entry( ary, 10 ));
+
+  printf( "done with pointers\n" );
+
+  rb_iv_set( self, "@trace", rb_ary_new() );
+  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+
+  printf( "created new trace and header\n" );
+
+  zm->self = self;
+
+  printf( "assigned self... done!\n" );
+
+  return self;
+}
+
+/*
+ *  Execute the next instruction (if possible) in the program loaded into the
+ *  machine.  Returns false if an instruction was *not* executed (for example,
+ *  the program has finished execution or the instruction is a read but no
+ *  input is available.
+ */
 
 VALUE machine_step( VALUE self ) {
   zmachine *zm;

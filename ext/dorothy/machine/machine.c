@@ -116,7 +116,6 @@ VALUE machine_marshal_dump( VALUE self ) {
  */
 
 VALUE machine_marshal_load( VALUE self, VALUE ary ) {
-  printf( "loading machine\n" );
   VALUE program;
   VALUE dynamic, stack;
   long i;
@@ -129,14 +128,10 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
 
   Data_Get_Struct( program, zprogram, zp );
 
-  printf( "loaded both structs\n" );
-
   rb_iv_set( self, "@program", program );
   rb_iv_set( self, "@output", rb_ary_entry( ary, 1 ) );
   rb_iv_set( self, "@keyboard", rb_ary_entry( ary, 2 ) );
   rb_iv_set( self, "@rng", rb_ary_entry( ary, 3 ) );
-
-  printf( "set most instance vars\n" );
 
   zm->zp = zp;
   zm->m = ALLOC( zmemory );
@@ -150,23 +145,17 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
   zm->m->dynamic_length = zp->m->dynamic_length;
   zm->m->static_length = zp->m->static_length;
 
-  printf( "halfway done setting up memory\n" );
-
   dynamic = rb_ary_entry( ary, 4 );
 
   for( i = 0; i < zm->m->dynamic_length; i++ ) {
     zm->m->m_dynamic[i] = NUM2UINT(rb_ary_entry( dynamic, i ));
   } 
 
-  printf( "done with memory\n" );
-
   stack = rb_ary_entry( ary, 5 );
 
   for( i = 0; i < STACK_SIZE; i++ ) {
     zm->stack[i] = NUM2UINT(rb_ary_entry( stack, i ));
   }
-
-  printf( "done with stack\n" );
 
   zm->pcp = zm->m->m_static + NUM2UINT(rb_ary_entry( ary, 6 )) - 
             zm->m->dynamic_length;
@@ -175,16 +164,10 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
   zm->frame_count = NUM2UINT(rb_ary_entry( ary, 9 ));
   zm->finished = NUM2UINT(rb_ary_entry( ary, 10 ));
 
-  printf( "done with pointers\n" );
-
   rb_iv_set( self, "@trace", rb_ary_new() );
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
 
-  printf( "created new trace and header\n" );
-
   zm->self = self;
-
-  printf( "assigned self... done!\n" );
 
   return self;
 }

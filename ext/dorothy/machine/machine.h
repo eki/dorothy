@@ -10,6 +10,7 @@
 VALUE Z;
 VALUE Machine;
 VALUE Header;
+VALUE Status;
 VALUE Dictionary;
 VALUE Entry;
 VALUE InputStream;
@@ -42,6 +43,14 @@ VALUE program_release( VALUE self );
 VALUE program_serial( VALUE self );
 VALUE program_read_string( VALUE self, VALUE addr );
 void  program_free( void * );
+
+VALUE status_type( VALUE self );
+VALUE status_score( VALUE self );
+VALUE status_turns( VALUE self );
+VALUE status_hours( VALUE self );
+VALUE status_minutes( VALUE self );
+VALUE status_location_number( VALUE self );
+VALUE status_location_name( VALUE self );
 
 VALUE header_version( VALUE self );
 
@@ -165,7 +174,10 @@ VALUE dictionary_load( VALUE self );
 
 ID id_new, id_srand, id_rand,
    id_line_available, id_char_available, id_read_line, id_read_char,
-   id_dictionary, id_parse;
+   id_dictionary, id_parse,
+   id_score, id_time;
+
+VALUE sym_score, sym_time;
 
 
 /*** Constants ***/

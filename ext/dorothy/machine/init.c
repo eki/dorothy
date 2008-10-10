@@ -26,6 +26,16 @@ void Init_machine() {
   rb_define_method( Program, "release", program_release, 0 );
   rb_define_method( Program, "serial", program_serial, 0 );
 
+  Status = rb_define_class_under( Z, "Status", rb_cObject );
+
+  rb_define_method( Status, "type", status_type, 0 );
+  rb_define_method( Status, "score", status_score, 0 );
+  rb_define_method( Status, "turns", status_turns, 0 );
+  rb_define_method( Status, "hours", status_hours, 0 );
+  rb_define_method( Status, "minutes", status_minutes, 0 );
+  rb_define_method( Status, "location_number", status_location_number, 0 );
+  rb_define_method( Status, "location_name", status_location_name, 0 );
+
   Header = rb_define_class_under( Z, "Header", rb_cObject );
 
   rb_define_method( Header, "version", header_version, 0 );
@@ -226,6 +236,11 @@ void Init_machine() {
   id_read_char = rb_intern( "read_char" );
   id_dictionary = rb_intern( "dictionary" );
   id_parse = rb_intern( "parse" );
+  id_score = rb_intern( "score" );
+  id_time = rb_intern( "time" );
+
+  sym_score = ID2SYM(id_score);
+  sym_time = ID2SYM(id_time);
 
   /* setup the z_op arrays */
 

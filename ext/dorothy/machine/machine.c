@@ -63,6 +63,10 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
   rb_iv_set( self, "@trace", rb_ary_new() );
 
   rb_iv_set( self, "@rng", rb_funcall( RandomNumberGenerator, id_new, 0 ) );
+
+  if( h_version(zm) <= 3 ) {
+    rb_iv_set( self, "@status", rb_funcall( Status, id_new, 1, self ) );
+  }
 }
 
 /*
@@ -166,6 +170,10 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
 
   rb_iv_set( self, "@trace", rb_ary_new() );
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+
+  if( h_version(zm) <= 3 ) {
+    rb_iv_set( self, "@status", rb_funcall( Status, id_new, 1, self ) );
+  }
 
   zm->self = self;
 

@@ -1,7 +1,7 @@
 
 class Z::Machine
 
-  attr_reader :header, :program, :output, :trace, :keyboard
+  attr_reader :header, :program, :output, :trace, :keyboard, :status
 
   def dictionary
     program.dictionary
@@ -11,6 +11,18 @@ class Z::Machine
     loop do
       break unless step
     end
+  end
+
+  def status?
+    ! status.nil?
+  end
+
+  def scored?
+    status? && status.type == :score
+  end
+
+  def timed?
+    status? && status.type == :time
   end
 
   class InputStream

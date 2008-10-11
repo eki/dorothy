@@ -227,6 +227,8 @@ void Init_machine() {
 
   RandomNumberGenerator = rb_define_class( "RandomNumberGenerator", rb_cObject);
 
+  RuntimeError = rb_define_class_under( Z, "RuntimeError", rb_eRuntimeError );
+
   id_new = rb_intern( "new" );
   id_srand = rb_intern( "srand" );
   id_rand = rb_intern( "rand" );

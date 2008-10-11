@@ -15,6 +15,7 @@ VALUE Dictionary;
 VALUE Entry;
 VALUE InputStream;
 VALUE Program;
+VALUE RuntimeError;
 VALUE RandomNumberGenerator;
 
 
@@ -447,7 +448,7 @@ VALUE sym_score, sym_time;
 #define text_buffer_offset(zm) (h_version(zm) < 5 ? 1 : 2)
 
 #define runtime_error(s) \
-  (rb_raise( rb_eRuntimeError, "Error running program: %s", (s) ))
+  (rb_raise( RuntimeError, "Error running program: %s", (s) ))
 
 #define obj_max_objects(zm) (h_version(zm) < 4 ? 255 : 65535)
 #define obj_parent_offset(zm) (h_version(zm) < 4 ? 4 : 6)

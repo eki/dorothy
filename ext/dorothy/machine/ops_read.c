@@ -96,6 +96,14 @@ void z_read( zmachine *zm ) {
     write_parse_table( zm, line, zm->zargs[1], h_dictionary(zm), 0 );
   }
 
+  /* echo the input back to the output */
+
+  print_cstr( zm, "> " );
+  print_rstr( zm, line );
+  print_cstr( zm, "\n" );
+
+  /* store the terminating character (if required) */
+
   if( h_version(zm) > 4 ) {
     p_store( zm, translate_to_zscii( zm, 10 ) );
   }

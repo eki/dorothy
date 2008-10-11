@@ -41,7 +41,7 @@ void write_parse_table( zmachine *zm,
     if( a == 0 || ! skip ) {
       write_word( zm, pt + 2 + i * 4, a );
       write_byte( zm, pt + 2 + i * 4 + 2, num );
-      write_byte( zm, pt + 2 + i * 4 + 3, pos );
+      write_byte( zm, pt + 2 + i * 4 + 3, pos + text_buffer_offset(zm) );
     }
   }
 }

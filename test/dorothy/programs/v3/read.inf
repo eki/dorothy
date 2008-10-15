@@ -50,6 +50,9 @@ Global baz='mailbox';
 ! ---
 ! - "open"
 ! - "mailbo"
+! - "> "
+! - "open mailbox"
+! - "\n"
 ! - "o"
 ! - "p"
 ! - "e"

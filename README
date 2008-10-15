@@ -1,0 +1,50 @@
+= Dorothy
+
+Dorothy is a z-machine interpreter library.  It's core is C (taken in part from
+Frotz), the interface is Ruby.  Ideally this project forms the basis for
+writing interpreters and other tools.
+
+The two most critical references for this are:
+
+  * The Z-Machine Standards Document <http://www.inform-fiction.org/zmachine/standards/z1point0/index.html>
+  * Frotz's source code <http://frotz.sourceforge.net/>
+
+= Demo
+
+There is a demo webapp that uses Dorothy at iFrotz <http://ifrotz.org>.
+
+= Testing
+
+You'll need the Inform 6 to compile the test programs <http://www.inform-fiction.org/software/index.html>.
+
+= Sample IRB Session
+
+eki@indus> irb -r dorothy                                    ~/projects/dorothy
+>> m = Z::Machine.new( "minizork.z3" )
+=> #<Z::Machine:0xb7cd7be0>
+
+>> m.run
+=> nil
+
+>> m.output
+=> ["MINI-ZORK I: ", "The Great Underground Empire", "\n", "Copyright (c) 1988
+Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom,
+Inc.\nRelease ", 34, " / Serial number ", "8", "7", "1", "1", "2", "4", "\n",
+"\n", "West of House", "\n", "You are standing in an open field west of a white
+house, with a boarded front door. ", "You could circle the house to the north
+or south.", "\n", "There is a ", "small mailbox", " here", ".", "\n", "\n",
+">"]
+
+>> m.output.clear     
+=> []
+
+>> m.keyboard << "open mailbox\n"
+=> "open mailbox\n"
+>> m.run
+=> nil
+
+>> m.output
+=> ["> ", "open mailbox", "\n", "Opening the ", "small mailbox", " reveals ",
+"a ", "leaflet", ".\n", "\n", ">"]
+
+

@@ -518,7 +518,9 @@ struct smemory {
 
   zbyte *m_dynamic;
   zbyte *m_static;
-};
+
+  zmemory *m;        /* Pointer back to self, allows using zmemory, zmachine */
+};                   /* and zprogram interchangably. */
 
 struct sprogram;
 typedef struct sprogram zprogram;
@@ -639,10 +641,6 @@ void storew( zmachine *zm, zaddr addr, zword value );
 void storeb( zmachine *zm, zaddr addr, zbyte value );
 
 /** Text processing **/
-
-typedef struct {
-  zmemory *m;
-} memory_wrapper;
 
 zchar translate_from_zscii( zmemory *zm, zbyte c );
 zbyte translate_to_zscii( zmachine *zm, zchar c );

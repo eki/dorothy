@@ -33,6 +33,7 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
   zm->zp = zp;
   zm->m = ALLOC( zmemory );
 
+  zm->m->m = zm->m;
   zm->m->m_dynamic = ALLOC_N(zbyte, zp->m->dynamic_length);
   MEMCPY( zm->m->m_dynamic, zp->m->m_dynamic, zbyte, zp->m->dynamic_length);
 
@@ -140,6 +141,7 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
   zm->zp = zp;
   zm->m = ALLOC( zmemory );
 
+  zm->m->m = zm->m;
   zm->m->m_dynamic = ALLOC_N(zbyte, zp->m->dynamic_length);
   zm->m->m_static = zp->m->m_static;
 
@@ -259,11 +261,7 @@ static zchar zscii_to_latin1[] = {
 };
 
 zchar translate_from_zscii( zmemory *m, zbyte c ) {   
-  memory_wrapper mw;
-  memory_wrapper *zm = &mw;
-  zm->m = m;
-
-  zaddr unicode = h_unicode_table( zm );
+  zaddr unicode = h_unicode_table( m );
 
   if( c == 0xfc ) {
     return ZC_MENU_CLICK;
@@ -281,12 +279,12 @@ zchar translate_from_zscii( zmemory *m, zbyte c ) {
 
     if( unicode != 0 ) {    /* game has its own Unicode table */
 
-      zbyte N = read_byte( zm, unicode );
+      zbyte N = read_byte( m, unicode );
 
       if (c - 0x9b < N) {
 
         zaddr addr = unicode + 1 + 2 * (c - 0x9b);
-        zword uc = read_word( zm, addr );
+        zword uc = read_word( m, addr );
 
         return (uc < 0x100) ? (zchar) uc : '?';
       }
@@ -362,16 +360,12 @@ zbyte translate_to_zscii( zmachine *zm, zchar c ) {
 }
 
 zchar alphabet( zmemory *m, int set, int index ) {   
-  memory_wrapper mw;
-  memory_wrapper *zm = &mw;
-  zm->m = m;
-
-  int version = h_version( zm );
-  zaddr alphabet = h_alphabet_table( zm );
+  int version = h_version( m );
+  zaddr alphabet = h_alphabet_table( m );
 
   if( alphabet != 0 ) {      /* game uses its own alphabet */
-      zbyte c = read_byte( zm, alphabet + set * 26 + index );
-      return translate_from_zscii( zm->m, c );
+      zbyte c = read_byte( m, alphabet + set * 26 + index );
+      return translate_from_zscii( m, c );
 
   } 
   else {                    /* game uses default alphabet */

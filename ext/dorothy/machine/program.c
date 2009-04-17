@@ -31,6 +31,7 @@ VALUE program_initialize( VALUE self, VALUE filename ) {
 
   zp->m = ALLOC( zmemory );
 
+  zp->m->m = zp->m;
   zp->m->m_dynamic = ALLOC_N( zbyte, 64 );
 
   if( fread( zp->m->m_dynamic, 1, 64, fp ) != 64 ) {

@@ -36,7 +36,7 @@ end
 ### the default task
 ###
 
-task :default => [:clean, :compile]
+task :default => [:clean, :compile, :compile_test_programs, :test]
 
 ###
 ### compile the test programs

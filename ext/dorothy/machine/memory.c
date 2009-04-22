@@ -460,12 +460,3 @@ VALUE memory_read_string( VALUE self, VALUE a ) {
   return str;
 }
 
-VALUE memory_get_object( VALUE self, VALUE n ) {
-  zmemory *m;
-  Data_Get_Struct( self, zmemory, m );
-
-  zaddr naddr = obj_name_addr( m, NUM2UINT(n) ) + 1; /* skip the size byte */
-
-  return memory_read_string( self, LONG2NUM((long) naddr) );
-}
-

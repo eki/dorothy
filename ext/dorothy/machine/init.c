@@ -4,6 +4,14 @@
 void Init_machine() {
   Z = rb_define_module( "Z" );
 
+  Memory = rb_define_class_under( Z, "Memory", rb_cObject );
+  rb_define_alloc_func( Memory, memory_alloc );
+  rb_define_method( Memory, "initialize", memory_initialize, 1 );
+  rb_define_method( Memory, "initialize_copy", memory_initialize_copy, 1 );
+  rb_define_method( Memory, "read_byte", memory_read_byte, 1 );
+  rb_define_method( Memory, "read_word", memory_read_word, 1 );
+  rb_define_method( Memory, "read_string", memory_read_string, 1 );
+
   Machine = rb_define_class_under( Z, "Machine", rb_cObject );
   rb_define_alloc_func( Machine, machine_alloc );
   rb_define_method( Machine, "initialize", machine_initialize, 1 );
@@ -230,6 +238,7 @@ void Init_machine() {
   RuntimeError = rb_define_class_under( Z, "RuntimeError", rb_eRuntimeError );
 
   id_new = rb_intern( "new" );
+  id_dup = rb_intern( "dup" );
   id_srand = rb_intern( "srand" );
   id_rand = rb_intern( "rand" );
   id_line_available = rb_intern( "line_available?" );

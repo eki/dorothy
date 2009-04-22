@@ -17,8 +17,11 @@ VALUE machine_alloc( VALUE klass ) {
 
 VALUE machine_initialize( VALUE self, VALUE program ) {
   VALUE header;
+  VALUE memory;
+
   zmachine *zm;
   zprogram *zp;
+  zmemory  *m;
 
   Data_Get_Struct( self, zmachine, zm );
 
@@ -28,16 +31,14 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
     program = rb_funcall( Program, id_new, 1, program );
   }
 
+  memory = rb_funcall( rb_iv_get( program, "@memory" ), id_dup, 0 );
+
   Data_Get_Struct( program, zprogram, zp );
+  Data_Get_Struct( memory, zmemory, m );
 
+  zm->m = m;
   zm->zp = zp;
-  zm->m = ALLOC( zmemory );
 
-  zm->m->m = zm->m;
-  zm->m->m_dynamic = ALLOC_N(zbyte, zp->m->dynamic_length);
-  MEMCPY( zm->m->m_dynamic, zp->m->m_dynamic, zbyte, zp->m->dynamic_length);
-
-  zm->m->m_static = zp->m->m_static;
 
   zm->finished = 0;
 
@@ -46,13 +47,10 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
 
   zm->version = zp->version;
 
-  zm->m->length = zp->m->length;
-  zm->m->dynamic_length = zp->m->dynamic_length;
-  zm->m->static_length = zp->m->static_length;
-
   /* Now that the program is loaded, finish setting up the Ruby stuff */
 
   rb_iv_set( self, "@program", program );
+  rb_iv_set( self, "@memory", memory );
 
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
 

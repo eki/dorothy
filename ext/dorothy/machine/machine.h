@@ -9,6 +9,7 @@
 
 VALUE Z;
 VALUE Machine;
+VALUE Memory;
 VALUE Header;
 VALUE Status;
 VALUE Dictionary;
@@ -20,6 +21,14 @@ VALUE RandomNumberGenerator;
 
 
 /* Prototypes */
+
+VALUE memory_alloc( VALUE klass );
+VALUE memory_initialize( VALUE self, VALUE filename );
+VALUE memory_initialize_copy( VALUE self, VALUE original );
+VALUE memory_read_byte( VALUE self, VALUE addr );
+VALUE memory_read_word( VALUE self, VALUE addr );
+VALUE memory_read_string( VALUE self, VALUE addr );
+void  memory_free( void * );
 
 VALUE machine_alloc( VALUE klass );
 VALUE machine_initialize( VALUE self, VALUE filename );
@@ -173,7 +182,7 @@ VALUE header_set_standard_minor( VALUE self, VALUE n );
 
 VALUE dictionary_load( VALUE self );
 
-ID id_new, id_srand, id_rand,
+ID id_new, id_dup, id_srand, id_rand,
    id_line_available, id_char_available, id_read_line, id_read_char,
    id_dictionary, id_parse,
    id_score, id_time;
@@ -520,7 +529,9 @@ struct smemory {
   zbyte *m_static;
 
   zmemory *m;        /* Pointer back to self, allows using zmemory, zmachine */
-};                   /* and zprogram interchangably. */
+                     /* and zprogram interchangably. */
+  VALUE self;
+};
 
 struct sprogram;
 typedef struct sprogram zprogram;
@@ -533,6 +544,8 @@ struct sprogram {
   zmemory *m;
   
   zword checksum;
+
+  VALUE self;
 };
 
 struct smachine;

@@ -16,63 +16,16 @@ VALUE program_alloc( VALUE klass ) {
  */
 
 VALUE program_initialize( VALUE self, VALUE filename ) {
-  char *fn = StringValuePtr( filename );
-  FILE *fp;
-  long i;
+  int i;
   zprogram *zp;
+  zmemory *zm;
+
+  VALUE memory = rb_funcall( Memory, id_new, 1, filename );
 
   Data_Get_Struct( self, zprogram, zp );
+  Data_Get_Struct( memory, zmemory, zm );
 
-  fp = fopen( fn, "rb" );
-
-  if( fp == NULL ) {
-    rb_raise( rb_eRuntimeError, "Unable to open file: %s", fn );
-  }
-
-  zp->m = ALLOC( zmemory );
-
-  zp->m->m = zp->m;
-  zp->m->m_dynamic = ALLOC_N( zbyte, 64 );
-
-  if( fread( zp->m->m_dynamic, 1, 64, fp ) != 64 ) {
-    fclose( fp );
-    rb_raise( rb_eRuntimeError, "Error reading header: %s", fn );
-  }
-
-  /* Set the actual program length (don't trust the program header) */
-
-  fseek( fp, 0, SEEK_END );
-  zp->m->length = ftell( fp );
-  fseek( fp, 0, SEEK_SET );
-
-  /* How long are the dynamic and static parts of memory? */
-
-  zp->m->dynamic_length = 64;  /* Temporary */
-
-  zp->m->dynamic_length = h_static_memory(zp) - 1;
-  zp->m->static_length = zp->m->length - zp->m->dynamic_length;
-
-  /* Read the entire program into memory */
-
-  REALLOC_N( zp->m->m_dynamic, zbyte, zp->m->dynamic_length );
-
-  if( fread( zp->m->m_dynamic, 1, zp->m->dynamic_length, fp ) != 
-      zp->m->dynamic_length ) {
-
-    fclose( fp );
-    rb_raise( rb_eRuntimeError, "Error reading program: %s", fn );
-  }
-
-  zp->m->m_static = ALLOC_N( zbyte, zp->m->static_length );
-
-  if( fread( zp->m->m_static, 1, zp->m->static_length, fp ) != 
-      zp->m->static_length ) {
-
-    fclose( fp );
-    rb_raise( rb_eRuntimeError, "Error reading program: %s", fn );
-  }
-
-  fclose( fp );
+  zp->m = zm;  
 
   zp->checksum = 0;
   for( i = 64; i < zp->m->length; i++ ) {
@@ -85,6 +38,8 @@ VALUE program_initialize( VALUE self, VALUE filename ) {
   for( i = 0; i < 6; i++ ) {
     zp->serial[i] = read_byte( zp, 0x12 + i );
   }
+
+  rb_iv_set( self, "@memory", memory );
 
   rb_iv_set( self, "@dictionary", 
     rb_funcall( Dictionary, id_new, 2, self, UINT2NUM(h_dictionary(zp)) ) );

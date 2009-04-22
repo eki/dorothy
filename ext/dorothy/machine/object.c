@@ -6,12 +6,21 @@ VALUE object_name( VALUE self ) {
   int n = NUM2UINT(rb_iv_get( self, "@number" ));
   VALUE memory = rb_iv_get( self, "@memory" );
 
+  zaddr naddr;
+  zbyte size;
+
   zmemory *m;
   Data_Get_Struct( memory, zmemory, m );
 
-  zaddr naddr = obj_name_addr( m, n ) + 1; /* skip the size byte */
+  naddr = obj_name_addr( m, n ) + 1; /* skip the size byte */
+  size  = obj_name_size( m, n );
 
-  return memory_read_string( memory, LONG2NUM((long) naddr) );
+  if( size > 0 ) {
+    return memory_read_string( memory, LONG2NUM((long) naddr) );
+  }
+  else {
+    return rb_str_new2( "" );
+  }
 }
 
 VALUE object_parent( VALUE self ) {

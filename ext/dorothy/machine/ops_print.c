@@ -71,8 +71,18 @@ void z_print_num( zmachine *zm ) {
 
 void z_print_obj( zmachine *zm ) {
   zaddr naddr = obj_name_addr( zm, zm->zargs[0] ) + 1; /* skip the size byte */
+  zbyte size  = obj_name_size( zm, zm->zargs[0] );
 
-  print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) naddr) ) );
+  VALUE str;
+
+  if( size > 0 ) {
+    str = memory_read_string( zm->m->self, LONG2NUM((long) naddr) );
+  }
+  else {
+    str = rb_str_new2( "" );
+  }
+
+  print_rstr( zm, str );
 }
 
 /*

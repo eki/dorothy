@@ -74,6 +74,7 @@ VALUE memory_initialize( VALUE self, VALUE filename ) {
     rb_funcall( Dictionary, id_new, 2, self, UINT2NUM(h_dictionary(m)) ) );
 
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+  rb_iv_set( self, "@objects", rb_funcall( ObjectTable, id_new, 1, self ) );
 }
 
 /*
@@ -105,6 +106,7 @@ VALUE memory_initialize_copy( VALUE self, VALUE original ) {
   m->static_length = mo->static_length;
 
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+  rb_iv_set( self, "@objects", rb_funcall( ObjectTable, id_new, 1, self ) );
 
   return self;
 }

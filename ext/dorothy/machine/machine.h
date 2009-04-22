@@ -11,6 +11,8 @@ VALUE Z;
 VALUE Machine;
 VALUE Memory;
 VALUE Header;
+VALUE ObjectTable;
+VALUE Object;
 VALUE Status;
 VALUE Dictionary;
 VALUE Entry;
@@ -51,6 +53,13 @@ VALUE program_version( VALUE self );
 VALUE program_release( VALUE self );
 VALUE program_serial( VALUE self );
 void  program_free( void * );
+
+VALUE object_table_find( VALUE self, VALUE n );
+
+VALUE object_name( VALUE self );
+VALUE object_parent( VALUE self );
+VALUE object_child( VALUE self );
+VALUE object_sibling( VALUE self );
 
 VALUE status_type( VALUE self );
 VALUE status_score( VALUE self );

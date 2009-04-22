@@ -33,8 +33,16 @@ void Init_machine() {
   rb_define_method( Program, "release", program_release, 0 );
   rb_define_method( Program, "serial", program_serial, 0 );
 
-  Status = rb_define_class_under( Z, "Status", rb_cObject );
+  ObjectTable = rb_define_class_under( Z, "ObjectTable", rb_cObject );
+  rb_define_method( ObjectTable, "[]", object_table_find, 1 );
 
+  Object = rb_define_class_under( Z, "Object", rb_cObject );
+  rb_define_method( Object, "name", object_name, 0 );
+  rb_define_method( Object, "parent", object_parent, 0 );
+  rb_define_method( Object, "child", object_child, 0 );
+  rb_define_method( Object, "sibling", object_sibling, 0 );
+
+  Status = rb_define_class_under( Z, "Status", rb_cObject );
   rb_define_method( Status, "type", status_type, 0 );
   rb_define_method( Status, "score", status_score, 0 );
   rb_define_method( Status, "turns", status_turns, 0 );

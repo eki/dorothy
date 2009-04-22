@@ -1,9 +1,9 @@
 
 class Z::Header
-  attr_reader :machine
+  attr_reader :memory
 
-  def initialize( machine )
-    @machine = machine
+  def initialize( memory )
+    @memory = memory
   end
 end
 

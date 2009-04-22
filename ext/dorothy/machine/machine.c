@@ -52,7 +52,7 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
   rb_iv_set( self, "@program", program );
   rb_iv_set( self, "@memory", memory );
 
-  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, memory ) );
 
   rb_iv_set( self, "@output", rb_ary_new() );
 
@@ -168,7 +168,7 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
   zm->finished = NUM2UINT(rb_ary_entry( ary, 10 ));
 
   rb_iv_set( self, "@trace", rb_ary_new() );
-  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
+  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, memory ) );
 
   if( h_version(zm) <= 3 ) {
     rb_iv_set( self, "@status", rb_funcall( Status, id_new, 1, self ) );

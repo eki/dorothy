@@ -574,51 +574,51 @@ struct smachine {
 
 /* Function prototypes */
 
-long h_program_length( zmachine *zm );
+long h_program_length( zmemory *m );
 
-void h_set_status_line_available( zmachine *zm, bool b );
-void h_set_screen_splitting_available( zmachine *zm, bool b );
-void h_set_variable_width_font_default( zmachine *zm, bool b );
-void h_set_colors_available( zmachine *zm, bool b );
-void h_set_picture_display_available( zmachine *zm, bool b );
-void h_set_bold_available( zmachine *zm, bool b );
-void h_set_italics_available( zmachine *zm, bool b );
-void h_set_fixed_width_available( zmachine *zm, bool b );
-void h_set_sound_available( zmachine *zm, bool b );
-void h_set_timed_input_available( zmachine *zm, bool b );
+void h_set_status_line_available( zmemory *m, bool b );
+void h_set_screen_splitting_available( zmemory *m, bool b );
+void h_set_variable_width_font_default( zmemory *m, bool b );
+void h_set_colors_available( zmemory *m, bool b );
+void h_set_picture_display_available( zmemory *m, bool b );
+void h_set_bold_available( zmemory *m, bool b );
+void h_set_italics_available( zmemory *m, bool b );
+void h_set_fixed_width_available( zmemory *m, bool b );
+void h_set_sound_available( zmemory *m, bool b );
+void h_set_timed_input_available( zmemory *m, bool b );
 
-void h_set_transcripting_on( zmachine *zm, bool b );
-void h_set_force_fixed_width( zmachine *zm, bool b );
-void h_set_status_line_redraw( zmachine *zm, bool b );
-void h_set_wants_pictures( zmachine *zm, bool b );
-void h_set_wants_undo( zmachine *zm, bool b );
-void h_set_wants_mouse( zmachine *zm, bool b );
-void h_set_wants_color( zmachine *zm, bool b );
-void h_set_wants_sound( zmachine *zm, bool b );
-void h_set_wants_menus( zmachine *zm, bool b );
+void h_set_transcripting_on( zmemory *m, bool b );
+void h_set_force_fixed_width( zmemory *m, bool b );
+void h_set_status_line_redraw( zmemory *m, bool b );
+void h_set_wants_pictures( zmemory *m, bool b );
+void h_set_wants_undo( zmemory *m, bool b );
+void h_set_wants_mouse( zmemory *m, bool b );
+void h_set_wants_color( zmemory *m, bool b );
+void h_set_wants_sound( zmemory *m, bool b );
+void h_set_wants_menus( zmemory *m, bool b );
 
-void h_set_mouse_x( zmachine *zm, int x );
-void h_set_mouse_y( zmachine *zm, int y );
+void h_set_mouse_x( zmemory *m, int x );
+void h_set_mouse_y( zmemory *m, int y );
 
-void h_set_interpreter_number( zmachine *zm, int n );
-void h_set_interpreter_version( zmachine *zm, int v );
+void h_set_interpreter_number( zmemory *m, int n );
+void h_set_interpreter_version( zmemory *m, int v );
 
-void h_set_screen_rows( zmachine *zm, int r );
-void h_set_screen_cols( zmachine *zm, int c );
+void h_set_screen_rows( zmemory *m, int r );
+void h_set_screen_cols( zmemory *m, int c );
 
-void h_set_screen_width( zmachine *zm, int w );
-void h_set_screen_height( zmachine *zm, int h );
+void h_set_screen_width( zmemory *m, int w );
+void h_set_screen_height( zmemory *m, int h );
 
-void h_set_font_width( zmachine *zm, int w );
-void h_set_font_height( zmachine *zm, int h );
+void h_set_font_width( zmemory *m, int w );
+void h_set_font_height( zmemory *m, int h );
 
-void h_set_default_background_color( zmachine *zm, int c );
-void h_set_default_foreground_color( zmachine *zm, int c );
+void h_set_default_background_color( zmemory *m, int c );
+void h_set_default_foreground_color( zmemory *m, int c );
 
-void h_set_output_stream3_width( zmachine *zm, int w );
+void h_set_output_stream3_width( zmemory *m, int w );
 
-void h_set_standard_major( zmachine *zm, int n );
-void h_set_standard_minor( zmachine *zm, int n );
+void h_set_standard_major( zmemory *m, int n );
+void h_set_standard_minor( zmemory *m, int n );
 
 /** Object related functions. **/
 

@@ -72,6 +72,8 @@ VALUE memory_initialize( VALUE self, VALUE filename ) {
 
   rb_iv_set( self, "@dictionary", 
     rb_funcall( Dictionary, id_new, 2, self, UINT2NUM(h_dictionary(m)) ) );
+
+  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
 }
 
 /*
@@ -90,6 +92,8 @@ VALUE memory_initialize_copy( VALUE self, VALUE original ) {
   Data_Get_Struct( self, zmemory, m );
   Data_Get_Struct( original, zmemory, mo );
 
+  m->self = self;
+
   m->m = m;
   m->m_dynamic = ALLOC_N(zbyte, mo->dynamic_length);
   MEMCPY( m->m_dynamic, mo->m_dynamic, zbyte, mo->dynamic_length ); 
@@ -99,6 +103,8 @@ VALUE memory_initialize_copy( VALUE self, VALUE original ) {
   m->length = mo->length;
   m->dynamic_length = mo->dynamic_length;
   m->static_length = mo->static_length;
+
+  rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
 
   return self;
 }

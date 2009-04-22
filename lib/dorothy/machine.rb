@@ -1,11 +1,7 @@
 
 class Z::Machine
 
-  attr_reader :header, :program, :output, :trace, :keyboard, :status
-
-  def dictionary
-    @memory.dictionary
-  end
+  attr_reader :memory, :program, :output, :trace, :keyboard, :status
 
   def run
     loop do

@@ -16,7 +16,7 @@ void write_parse_table( zmachine *zm,
   int i;
 
   if( dict == h_dictionary(zm) ) {
-    dictionary = rb_funcall( zm->self, id_dictionary, 0 );
+    dictionary = rb_funcall( zm->m->self, id_dictionary, 0 );
   }
   else {
     dictionary = 

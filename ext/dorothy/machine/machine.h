@@ -32,6 +32,7 @@ VALUE memory_read_byte( VALUE self, VALUE addr );
 VALUE memory_read_word( VALUE self, VALUE addr );
 VALUE memory_read_string( VALUE self, VALUE addr );
 VALUE memory_read_string_array( VALUE self, VALUE addr, VALUE length );
+VALUE memory_get_object( VALUE self, VALUE n );
 void  memory_free( void * );
 
 VALUE machine_alloc( VALUE klass );

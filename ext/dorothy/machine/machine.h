@@ -54,6 +54,7 @@ VALUE program_serial( VALUE self );
 void  program_free( void * );
 
 VALUE object_table_find( VALUE self, VALUE n );
+VALUE object_table_each( VALUE self );
 
 VALUE object_name( VALUE self );
 VALUE object_parent( VALUE self );

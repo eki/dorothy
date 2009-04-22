@@ -34,6 +34,7 @@ void Init_machine() {
 
   ObjectTable = rb_define_class_under( Z, "ObjectTable", rb_cObject );
   rb_define_method( ObjectTable, "[]", object_table_find, 1 );
+  rb_define_method( ObjectTable, "each", object_table_each, 0 );
 
   Object = rb_define_class_under( Z, "Object", rb_cObject );
   rb_define_method( Object, "name", object_name, 0 );

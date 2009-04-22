@@ -119,11 +119,12 @@ VALUE machine_marshal_dump( VALUE self ) {
  */
 
 VALUE machine_marshal_load( VALUE self, VALUE ary ) {
-  VALUE program;
+  VALUE program, memory;
   VALUE dynamic, stack;
   long i;
   zmachine *zm;
   zprogram *zp;
+  zmemory *m;
 
   Data_Get_Struct( self, zmachine, zm );
 
@@ -137,17 +138,15 @@ VALUE machine_marshal_load( VALUE self, VALUE ary ) {
   rb_iv_set( self, "@rng", rb_ary_entry( ary, 3 ) );
 
   zm->zp = zp;
-  zm->m = ALLOC( zmemory );
-
-  zm->m->m = zm->m;
-  zm->m->m_dynamic = ALLOC_N(zbyte, zp->m->dynamic_length);
-  zm->m->m_static = zp->m->m_static;
-
   zm->version = zp->version;
 
-  zm->m->length = zp->m->length;
-  zm->m->dynamic_length = zp->m->dynamic_length;
-  zm->m->static_length = zp->m->static_length;
+  memory = rb_funcall( rb_iv_get( program, "@memory" ), id_dup, 0 );
+
+  Data_Get_Struct( memory, zmemory, m );
+
+  rb_iv_set( self, "@memory", memory );
+
+  zm->m = m;
 
   dynamic = rb_ary_entry( ary, 4 );
 

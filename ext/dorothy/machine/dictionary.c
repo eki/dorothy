@@ -3,15 +3,15 @@
 
 
 VALUE dictionary_load( VALUE self ) {
-  VALUE program = rb_iv_get( self, "@program" );
+  VALUE memory = rb_iv_get( self, "@memory" );
   zaddr dict = (zaddr) NUM2UINT(rb_iv_get( self, "@addr" ));
-  zprogram *zp;
+  zmemory *m;
 
-  Data_Get_Struct( program, zprogram, zp );
+  Data_Get_Struct( memory, zmemory, m );
 
-  zbyte entry_length = dict_entry_length( zp, dict );
-  zword ne = dict_num_entries( zp, dict );
-  zbyte ns = dict_num_word_separators( zp, dict );
+  zbyte entry_length = dict_entry_length( m, dict );
+  zword ne = dict_num_entries( m, dict );
+  zbyte ns = dict_num_word_separators( m, dict );
 
   rb_iv_set( self, "@entry_length", UINT2NUM(entry_length) );
 
@@ -30,7 +30,7 @@ VALUE dictionary_load( VALUE self ) {
 
     rb_ary_push( ary,
       rb_funcall( Entry, id_new, 2,
-        program_read_string( program, UINT2NUM(a) ), UINT2NUM(a) ) );
+        memory_read_string( memory, UINT2NUM(a) ), UINT2NUM(a) ) );
   }
 
   rb_iv_set( self, "@entries", ary );
@@ -40,7 +40,7 @@ VALUE dictionary_load( VALUE self ) {
   ary = rb_ary_new();
 
   for( i = 0; i < ns; i++ ) {
-    *c = read_byte( zp, dict + 1 + i );
+    *c = read_byte( m, dict + 1 + i );
     rb_ary_push( ary, rb_str_new2( c ) );
   }
 

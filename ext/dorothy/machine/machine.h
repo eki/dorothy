@@ -25,17 +25,18 @@ VALUE RandomNumberGenerator;
 VALUE memory_alloc( VALUE klass );
 VALUE memory_initialize( VALUE self, VALUE filename );
 VALUE memory_initialize_copy( VALUE self, VALUE original );
+VALUE memory_length( VALUE self );
+VALUE memory_dynamic_length( VALUE self );
+VALUE memory_static_length( VALUE self );
 VALUE memory_read_byte( VALUE self, VALUE addr );
 VALUE memory_read_word( VALUE self, VALUE addr );
 VALUE memory_read_string( VALUE self, VALUE addr );
+VALUE memory_read_string_array( VALUE self, VALUE addr, VALUE length );
 void  memory_free( void * );
 
 VALUE machine_alloc( VALUE klass );
 VALUE machine_initialize( VALUE self, VALUE filename );
-VALUE machine_read_byte( VALUE self, VALUE addr );
-VALUE machine_read_word( VALUE self, VALUE addr );
 VALUE machine_read_string( VALUE self, VALUE addr );
-VALUE machine_read_string_array( VALUE self, VALUE addr, VALUE length );
 VALUE machine_step( VALUE self );
 VALUE machine_finished( VALUE self );
 VALUE machine_marshal_dump( VALUE self );
@@ -44,14 +45,10 @@ void  machine_free( void * );
 
 VALUE program_alloc( VALUE klass );
 VALUE program_initialize( VALUE self, VALUE filename );
-VALUE program_length( VALUE self );
-VALUE program_dynamic_length( VALUE self );
-VALUE program_static_length( VALUE self );
 VALUE program_checksum( VALUE self );
 VALUE program_version( VALUE self );
 VALUE program_release( VALUE self );
 VALUE program_serial( VALUE self );
-VALUE program_read_string( VALUE self, VALUE addr );
 void  program_free( void * );
 
 VALUE status_type( VALUE self );
@@ -623,8 +620,7 @@ void h_set_output_stream3_width( zmachine *zm, int w );
 void h_set_standard_major( zmachine *zm, int n );
 void h_set_standard_minor( zmachine *zm, int n );
 
-
-/*void dict_get_entry( zmachine *zm, zword i, zchar *entry );*/
+/** Object related functions. **/
 
 zaddr obj_next_prop_addr( zmachine *zm, zaddr prop );
 
@@ -656,7 +652,7 @@ void storeb( zmachine *zm, zaddr addr, zbyte value );
 /** Text processing **/
 
 zchar translate_from_zscii( zmemory *zm, zbyte c );
-zbyte translate_to_zscii( zmachine *zm, zchar c );
+zbyte translate_to_zscii( zmemory *zm, zchar c );
 zchar alphabet( zmemory *zm, int set, int index );
 
 /* Ops */

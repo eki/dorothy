@@ -7,13 +7,6 @@ class TestDictionary < Test::Unit::TestCase
   F  = "#{File.dirname( __FILE__ )}/programs/read.z5"
   ZP = Z::Program.new( F )
 
-  def test_program
-    assert( ZP )
-    assert( ZP.dictionary )
-
-    assert( ZP, ZP.dictionary.program )
-  end
-
   def test_addr
     assert_equal( 1317, ZP.dictionary.addr )   # bad to hardcode!
   end

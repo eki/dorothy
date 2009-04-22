@@ -1,7 +1,5 @@
 
 class Z::Program
-  attr_reader :dictionary
-
   def self.new( file )
     @programs ||= {}
 
@@ -18,6 +16,10 @@ class Z::Program
 
   def self._load( filename )
     new( filename )
+  end
+
+  def dictionary
+    @memory.dictionary
   end
 
 end

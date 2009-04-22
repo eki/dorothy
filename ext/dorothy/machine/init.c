@@ -8,6 +8,9 @@ void Init_machine() {
   rb_define_alloc_func( Memory, memory_alloc );
   rb_define_method( Memory, "initialize", memory_initialize, 1 );
   rb_define_method( Memory, "initialize_copy", memory_initialize_copy, 1 );
+  rb_define_method( Memory, "length", memory_length, 0 );
+  rb_define_method( Memory, "dynamic_length", memory_dynamic_length, 0 );
+  rb_define_method( Memory, "static_length", memory_static_length, 0 );
   rb_define_method( Memory, "read_byte", memory_read_byte, 1 );
   rb_define_method( Memory, "read_word", memory_read_word, 1 );
   rb_define_method( Memory, "read_string", memory_read_string, 1 );
@@ -19,16 +22,11 @@ void Init_machine() {
   rb_define_method( Machine, "finished?", machine_finished, 0 );
   rb_define_method( Machine, "marshal_dump", machine_marshal_dump, 0 );
   rb_define_method( Machine, "marshal_load", machine_marshal_load, 1 );
-  rb_define_method( Machine, "read_byte", machine_read_byte, 1 );
-  rb_define_method( Machine, "read_word", machine_read_word, 1 );
   rb_define_method( Machine, "read_string", machine_read_string, 1 );
 
   Program = rb_define_class_under( Z, "Program", rb_cObject );
   rb_define_alloc_func( Program, program_alloc );
   rb_define_method( Program, "initialize", program_initialize, 1 );
-  rb_define_method( Program, "length", program_length, 0 );
-  rb_define_method( Program, "dynamic_length", program_dynamic_length, 0 );
-  rb_define_method( Program, "static_length", program_static_length, 0 );
   rb_define_method( Program, "checksum", program_checksum, 0 );
   rb_define_method( Program, "version", program_version, 0 );
   rb_define_method( Program, "release", program_release, 0 );

@@ -1,6 +1,7 @@
 
 module Z; end
 
+require 'dorothy/memory'
 require 'dorothy/program'
 require 'dorothy/machine'
 require 'dorothy/header'

@@ -19,7 +19,8 @@ void write_parse_table( zmachine *zm,
     dictionary = rb_funcall( zm->self, id_dictionary, 0 );
   }
   else {
-    dictionary = rb_funcall( Dictionary, id_new, 2, zm->self, UINT2NUM(dict) );
+    dictionary = 
+      rb_funcall( Dictionary, id_new, 2, zm->m->self, UINT2NUM(dict) );
   }
 
 
@@ -79,7 +80,7 @@ void z_read( zmachine *zm ) {
     zchar c = *(RSTRING(line)->ptr + i);
 
     write_byte( zm, zm->zargs[0] + text_buffer_offset(zm) + size + i, 
-      translate_to_zscii( zm, c ) );
+      translate_to_zscii( zm->m, c ) );
   }
 
   if( h_version(zm) < 5 ) {
@@ -105,7 +106,7 @@ void z_read( zmachine *zm ) {
   /* store the terminating character (if required) */
 
   if( h_version(zm) > 4 ) {
-    p_store( zm, translate_to_zscii( zm, 10 ) );
+    p_store( zm, translate_to_zscii( zm->m, 10 ) );
   }
 }
 
@@ -120,7 +121,7 @@ void z_read( zmachine *zm ) {
 
 void z_read_char( zmachine *zm ) {
   zchar c = NUM2UINT(rb_funcall( keyboard(zm), id_read_char, 0 ));
-  p_store( zm, translate_to_zscii( zm, c ) );
+  p_store( zm, translate_to_zscii( zm->m, c ) );
 }
 
 /*
@@ -138,7 +139,7 @@ void z_tokenise( zmachine *zm ) {
   zaddr dict = h_dictionary(zm);
   bool skip = 0;
 
-  VALUE text = machine_read_string_array( zm->self, 
+  VALUE text = memory_read_string_array( zm->m->self, 
     UINT2NUM(zm->zargs[0] + text_buffer_offset(zm)),
     UINT2NUM(read_byte( zm, zm->zargs[0] )) );
 

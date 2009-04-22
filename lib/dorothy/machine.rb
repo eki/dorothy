@@ -4,7 +4,7 @@ class Z::Machine
   attr_reader :header, :program, :output, :trace, :keyboard, :status
 
   def dictionary
-    program.dictionary
+    @memory.dictionary
   end
 
   def run

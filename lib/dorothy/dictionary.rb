@@ -1,11 +1,11 @@
 
 class Z::Dictionary
-  attr_reader :program, :addr, :entries, :entry_length, :word_separators
+  attr_reader :addr, :entries, :entry_length, :word_separators
 
   private :load
 
-  def initialize( program, addr )
-    @program, @addr = program, addr
+  def initialize( memory, addr )
+    @memory, @addr = memory, addr
     load
   end
 

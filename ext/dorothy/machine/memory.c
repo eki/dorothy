@@ -8,7 +8,7 @@
 
 VALUE memory_alloc( VALUE klass ) {
   zmemory *m = ALLOC( zmemory );
-  VALUE obj = Data_Wrap_Struct( klass, 0, memory_free, m );
+  VALUE obj = Data_Wrap_Struct( klass, memory_mark, memory_free, m );
 }
 
 /*
@@ -30,6 +30,8 @@ VALUE memory_initialize( VALUE self, VALUE filename ) {
   }
 
   m->self = self;
+  m->parent = 0;
+  m->children = 0;
 
   m->m = m;
   m->m_dynamic = ALLOC_N( zbyte, 64 );
@@ -82,7 +84,33 @@ VALUE memory_initialize( VALUE self, VALUE filename ) {
  */
 
 void memory_free( void *p ) {
-  free( p );
+  zmemory *m = (zmemory *)p;
+
+  if( m->parent != 0 ) {
+    m->parent->children--;
+  }
+  
+  free( m->m_dynamic );
+
+  if( m->parent == 0 && m->children <= 0 ) {
+    free( m->m_static );
+  }
+
+  free( m );
+}
+
+/*
+ *  Mark references to other zmemory structs (and by extension Z::Memory 
+ *  objects).
+ */
+
+void memory_mark( void *p ) {
+  zmemory *m = (zmemory *)p;
+
+  if( m->parent != 0 ) {
+    rb_gc_mark( m->parent->self );
+  }
+
 }
 
 
@@ -94,6 +122,9 @@ VALUE memory_initialize_copy( VALUE self, VALUE original ) {
   Data_Get_Struct( original, zmemory, mo );
 
   m->self = self;
+  m->parent = mo;
+  m->children = 0;
+  m->parent->children++;
 
   m->m = m;
   m->m_dynamic = ALLOC_N(zbyte, mo->dynamic_length);

@@ -34,6 +34,7 @@ VALUE memory_read_byte( VALUE self, VALUE addr );
 VALUE memory_read_word( VALUE self, VALUE addr );
 VALUE memory_read_string( VALUE self, VALUE addr );
 VALUE memory_read_string_array( VALUE self, VALUE addr, VALUE length );
+void  memory_mark( void * );
 void  memory_free( void * );
 
 VALUE machine_alloc( VALUE klass );
@@ -537,6 +538,10 @@ struct smemory {
 
   zmemory *m;        /* Pointer back to self, allows using zmemory, zmachine */
                      /* and zprogram interchangably. */
+
+  zmemory *parent;   /* zmemory structs can share static memory, so to       */
+  long children;     /* assist ruby's gc, we need to track the parent and    */
+                     /* and count refs. */
   VALUE self;
 };
 

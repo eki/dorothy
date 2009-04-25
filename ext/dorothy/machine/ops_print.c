@@ -20,7 +20,8 @@ void z_new_line( zmachine *zm ) {
  */
 
 void z_print( zmachine *zm ) {
-  print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) -1) ) );
+  print_rstr( zm, memory_read_string( zm->m->self, LONG2NUM(PC(zm)) ) );
+  p_skip_embedded_string( zm );
 }
 
 /*
@@ -32,7 +33,7 @@ void z_print( zmachine *zm ) {
 
 void z_print_addr( zmachine *zm ) {
   print_rstr( zm, 
-              machine_read_string( zm->self, LONG2NUM((long) zm->zargs[0]) ) );
+    memory_read_string( zm->m->self, LONG2NUM((long) zm->zargs[0]) ) );
 }
 
 /*
@@ -108,7 +109,7 @@ void z_print_paddr( zmachine *zm ) {
     addr *= 8;
   }
 
-  print_rstr( zm, machine_read_string( zm->self, LONG2NUM(addr) ) );
+  print_rstr( zm, memory_read_string( zm->m->self, LONG2NUM(addr) ) );
 }
 
 /*
@@ -119,8 +120,9 @@ void z_print_paddr( zmachine *zm ) {
  */
 
 void z_print_ret( zmachine *zm ) {
-  print_rstr( zm, machine_read_string( zm->self, LONG2NUM((long) -1) ) );
+  print_rstr( zm, memory_read_string( zm->m->self, LONG2NUM(PC(zm)) ) );
   print_cstr( zm, "\n" );
+  p_skip_embedded_string( zm );
   p_ret( zm, 1 );
 }
 

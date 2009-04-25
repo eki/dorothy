@@ -22,7 +22,6 @@ void Init_machine() {
   rb_define_method( Machine, "finished?", machine_finished, 0 );
   rb_define_method( Machine, "marshal_dump", machine_marshal_dump, 0 );
   rb_define_method( Machine, "marshal_load", machine_marshal_load, 1 );
-  rb_define_method( Machine, "read_string", machine_read_string, 1 );
 
   Program = rb_define_class_under( Z, "Program", rb_cObject );
   rb_define_alloc_func( Program, program_alloc );

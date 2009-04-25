@@ -400,3 +400,16 @@ void p_branch( zmachine *zm, bool flag ) {
   }
 }
 
+void p_skip_embedded_string( zmachine *zm ) {
+  long addr = PC(zm);
+  zword w;
+
+  do {
+    w = read_word( zm, addr );
+    addr += 2;
+
+    zm->pcp += 2;
+  }
+  while( !(w & 0x8000) );
+}
+

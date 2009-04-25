@@ -39,7 +39,6 @@ void  memory_free( void * );
 
 VALUE machine_alloc( VALUE klass );
 VALUE machine_initialize( VALUE self, VALUE filename );
-VALUE machine_read_string( VALUE self, VALUE addr );
 VALUE machine_step( VALUE self );
 VALUE machine_finished( VALUE self );
 VALUE machine_marshal_dump( VALUE self );
@@ -680,6 +679,8 @@ void p_call( zmachine *zm, zword routine, int argc, zword *args, int ct );
 void p_ret( zmachine *zm, zword value );
 
 void p_branch( zmachine *zm, bool flag );
+
+void p_skip_embedded_string( zmachine *zm );
 
 void storew( zmachine *zm, zaddr addr, zword value );
 void storeb( zmachine *zm, zaddr addr, zbyte value );

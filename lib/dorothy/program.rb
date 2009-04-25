@@ -2,14 +2,21 @@
 class Z::Program
   attr_reader :memory
 
-  def self.new( file )
-    @programs ||= {}
+  class << self
 
-    file = File.expand_path( file )
+    def []( file )
+      @programs ||= {}
 
-    return @programs[file] if @programs.key?( file )
+      file = File.expand_path( file )
 
-    @programs[file] = super
+      return @programs[file] if @programs.key?( file )
+
+      @programs[file] = new( file )
+    end
+
+    def programs
+      @programs ||= {}
+    end
   end
 
   def _dump( depth=-1 )

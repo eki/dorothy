@@ -5,7 +5,7 @@ require 'dorothy'
 class TestDictionary < Test::Unit::TestCase
 
   F  = "#{File.dirname( __FILE__ )}/programs/read.z5"
-  ZP = Z::Program.new( F )
+  ZP = Z::Program[F]
   M = ZP.memory
 
   def test_addr
@@ -58,7 +58,7 @@ class TestDictionary < Test::Unit::TestCase
 
   def test_cached
     assert_equal( M.dictionary.object_id, 
-                  Z::Program.new( F).memory.dictionary.object_id )
+                  Z::Program[F].memory.dictionary.object_id )
   end
 
 end

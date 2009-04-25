@@ -8,7 +8,7 @@
 
 VALUE machine_alloc( VALUE klass ) {
   zmachine *zm = ALLOC( zmachine );
-  VALUE obj = Data_Wrap_Struct( klass, 0, machine_free, zm );
+  return Data_Wrap_Struct( klass, 0, machine_free, zm );
 }
 
 /*
@@ -59,6 +59,8 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
   rb_iv_set( self, "@trace", rb_ary_new() );
 
   rb_iv_set( self, "@rng", rb_funcall( RandomNumberGenerator, id_new, 0 ) );
+
+  return self;
 }
 
 /*
@@ -105,6 +107,8 @@ VALUE machine_marshal_dump( VALUE self ) {
   rb_ary_push( ary, UINT2NUM(zm->fp - zm->stack) );
   rb_ary_push( ary, UINT2NUM(zm->frame_count) );
   rb_ary_push( ary, UINT2NUM(zm->finished) );
+
+  return self;
 }
 
 /*
@@ -200,15 +204,14 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
 
   long addr = NUM2LONG(a);
   bool consume = false;
-  int limit;
 
   if( addr > 0 ) {
-    trace( zm, "read_string called with addr (%d)\n", addr );
+    trace( zm, "read_string called with addr (%ld)\n", addr );
   }
   else if( addr == -1 ) {
     addr = PC(zm);
     consume = true;
-    trace( zm, "read_string called with PC (%d)\n", addr );
+    trace( zm, "read_string called with PC (%ld)\n", addr );
   }
 
   int version = h_version( zm );
@@ -252,25 +255,25 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
           }
           else if( version == V1 && *c == 1 ) {
             *c = '\n';
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
 
             trace( zm, "  (newline) read c: %s\n", c ); 
           }
           else if( version >= V2 && shift_state == 2 && *c == 7 ) {
             *c = '\n';
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
 
             trace( zm, "  (newline) read c: %s\n", c ); 
           }
           else if( *c >= 6 ) {
             *c = alphabet( zm->m, shift_state, *c - 6 );
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
 
             trace( zm, "  (alpha) read c: %s\n", c ); 
           }
           else if( *c == 0 ) {
             *c = ' ';
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
 
             trace( zm, "  (space) read c: %s\n", c ); 
           }
@@ -318,7 +321,7 @@ VALUE machine_read_string( VALUE self, VALUE a ) {
         case 3:
 
           *c = translate_from_zscii( zm->m, (zbyte) ((last_c << 5) | *c) );
-          rb_str_append( str, rb_str_new2( c ) );
+          rb_str_append( str, rb_str_new2( (char *)c ) );
 
           trace( zm, "  (10bit) read c: %s\n", c ); 
 

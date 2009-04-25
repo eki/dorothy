@@ -8,7 +8,7 @@
 
 VALUE program_alloc( VALUE klass ) {
   zprogram *zp = ALLOC( zprogram );
-  VALUE obj = Data_Wrap_Struct( klass, 0, program_free, zp );
+  return Data_Wrap_Struct( klass, 0, program_free, zp );
 }
 
 /*
@@ -42,6 +42,8 @@ VALUE program_initialize( VALUE self, VALUE filename ) {
   rb_iv_set( self, "@memory", memory );
 
   rb_iv_set( self, "@filename", filename );
+
+  return self;
 }
 
 /*
@@ -98,7 +100,6 @@ VALUE program_serial( VALUE self ) {
 
   Data_Get_Struct( self, zprogram, zp );
 
-  VALUE serial;
   int i;
   char s[7] = { 0, 0, 0, 0, 0, 0, 0 };
 

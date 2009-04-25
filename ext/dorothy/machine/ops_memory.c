@@ -14,7 +14,6 @@
  */
 
 void z_copy_table( zmachine *zm ) {
-  zword addr;
   zword size = zm->zargs[2];
   zbyte value;
   int i;

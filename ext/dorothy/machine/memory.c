@@ -18,7 +18,6 @@ VALUE memory_alloc( VALUE klass ) {
 VALUE memory_initialize( VALUE self, VALUE filename ) {
   char *fn = StringValuePtr( filename );
   FILE *fp;
-  long i;
   zmemory *m;
 
   Data_Get_Struct( self, zmemory, m );
@@ -248,7 +247,7 @@ VALUE memory_read_string_array( VALUE self, VALUE addr, VALUE length ) {
   for( i = 0; i < len; i++ ) {
     *c = translate_from_zscii( m, read_byte( m, a + i ) );
 
-    rb_str_append( str, rb_str_new2( c ) );
+    rb_str_append( str, rb_str_new2( (char *)c ) );
   }
 
   return str;
@@ -433,19 +432,19 @@ VALUE memory_read_string( VALUE self, VALUE a ) {
           }
           else if( version == V1 && *c == 1 ) {
             *c = '\n';
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
           }
           else if( version >= V2 && shift_state == 2 && *c == 7 ) {
             *c = '\n';
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
           }
           else if( *c >= 6 ) {
             *c = alphabet( m, shift_state, *c - 6 );
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
           }
           else if( *c == 0 ) {
             *c = ' ';
-            rb_str_append( str, rb_str_new2( c ) );
+            rb_str_append( str, rb_str_new2( (char *)c ) );
           }
           else if( (version >= V2 && *c == 1) ||
                    (version >= V3 && *c <= 3) ) {
@@ -484,7 +483,7 @@ VALUE memory_read_string( VALUE self, VALUE a ) {
         case 3:
 
           *c = translate_from_zscii( m, (zbyte) ((last_c << 5) | *c) );
-          rb_str_append( str, rb_str_new2( c ) );
+          rb_str_append( str, rb_str_new2( (char *)c ) );
 
           status = 0;
           break;

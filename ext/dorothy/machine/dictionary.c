@@ -41,7 +41,7 @@ VALUE dictionary_load( VALUE self ) {
 
   for( i = 0; i < ns; i++ ) {
     *c = read_byte( m, dict + 1 + i );
-    rb_ary_push( ary, rb_str_new2( c ) );
+    rb_ary_push( ary, rb_str_new2( (char *)c ) );
   }
 
   rb_iv_set( self, "@word_separators", ary );

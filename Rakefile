@@ -29,7 +29,8 @@ end
 
 desc "compile the C extension part of the dorothy library"
 task :compile do
-  sh %{cd ext/dorothy/machine && ruby ./extconf.rb && make}
+  ruby = ($0 =~ /rake(.+)/) ? "ruby#{$1}" : "ruby"
+  sh %{cd ext/dorothy/machine && #{ruby} ./extconf.rb && make}
 end
 
 ###

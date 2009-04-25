@@ -197,6 +197,25 @@ ID id_new, id_dup, id_srand, id_rand,
 VALUE sym_score, sym_time;
 
 
+/*** Ruby 1.9 and 1.8 compatibility ***/
+
+#ifndef RSTRING_PTR
+#define RSTRING_PTR(x) (RSTRING(x)->ptr)
+#endif
+
+#ifndef RSTRING_LEN
+#define RSTRING_LEN(x) (RSTRING(x)->len)
+#endif
+
+#ifndef RARRAY_PTR
+#define RARRAY_PTR(x) (RARRAY(x)->ptr)
+#endif
+
+#ifndef RARRAY_LEN
+#define RARRAY_LEN(x) (RARRAY(x)->len)
+#endif
+
+
 /*** Constants ***/
 
 #define true 1

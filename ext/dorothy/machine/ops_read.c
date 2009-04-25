@@ -27,8 +27,8 @@ void write_parse_table( zmachine *zm,
   n = read_byte( zm, pt );
   parsed = rb_funcall( dictionary, id_parse, 1, text );
 
-  if( n > RARRAY(parsed)->len ) {
-    n = RARRAY(parsed)->len;
+  if( n > RARRAY_LEN(parsed) ) {
+    n = RARRAY_LEN(parsed);
   }
 
   write_byte( zm, pt + 1, n );
@@ -76,8 +76,8 @@ void z_read( zmachine *zm ) {
 
   line = rb_funcall( keyboard(zm), id_read_line, 1, UINT2NUM(max - size) );
 
-  for( i = 0; i < RSTRING(line)->len; i++ ) {
-    zchar c = *(RSTRING(line)->ptr + i);
+  for( i = 0; i < RSTRING_LEN(line); i++ ) {
+    zchar c = *(RSTRING_PTR(line) + i);
 
     write_byte( zm, zm->zargs[0] + text_buffer_offset(zm) + size + i, 
       translate_to_zscii( zm->m, c ) );

@@ -77,6 +77,10 @@ VALUE memory_initialize( VALUE self, VALUE filename ) {
 
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
   rb_iv_set( self, "@objects", rb_funcall( ObjectTable, id_new, 1, self ) );
+
+  if( h_version(m) <= 3 ) {
+    rb_iv_set( self, "@status", rb_funcall( Status, id_new, 1, self ) );
+  }
 }
 
 /*
@@ -138,6 +142,10 @@ VALUE memory_initialize_copy( VALUE self, VALUE original ) {
 
   rb_iv_set( self, "@header", rb_funcall( Header, id_new, 1, self ) );
   rb_iv_set( self, "@objects", rb_funcall( ObjectTable, id_new, 1, self ) );
+
+  if( h_version(m) <= 3 ) {
+    rb_iv_set( self, "@status", rb_funcall( Status, id_new, 1, self ) );
+  }
 
   return self;
 }

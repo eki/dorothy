@@ -67,8 +67,7 @@ VALUE status_score( VALUE self );
 VALUE status_turns( VALUE self );
 VALUE status_hours( VALUE self );
 VALUE status_minutes( VALUE self );
-VALUE status_location_number( VALUE self );
-VALUE status_location_name( VALUE self );
+VALUE status_location( VALUE self );
 
 VALUE header_version( VALUE self );
 

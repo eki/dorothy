@@ -2,19 +2,19 @@
 #include "machine.h"
 
 VALUE status_type( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+  VALUE memory = rb_iv_get( self, "@memory" );
+  zmemory *m;
 
-  Data_Get_Struct( machine, zmachine, zm );
+  Data_Get_Struct( memory, zmemory, m );
 
-  if( h_version(zm) > 3 ) {
+  if( h_version(m) > 3 ) {
     return Qnil;
   }
 
-  if( h_status_line_score(zm) ) {
+  if( h_status_line_score(m) ) {
     return sym_score;
   }
-  else if( h_status_line_time(zm) ) {
+  else if( h_status_line_time(m) ) {
     return sym_time;
   }
 
@@ -22,102 +22,86 @@ VALUE status_type( VALUE self ) {
 }
 
 VALUE status_score( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+  VALUE memory = rb_iv_get( self, "@memory" );
+  zmemory *m;
 
-  Data_Get_Struct( machine, zmachine, zm );
+  Data_Get_Struct( memory, zmemory, m );
 
-  if( h_version(zm) > 3 ) {
+  if( h_version(m) > 3 ) {
     return Qnil;
   }
 
-  if( ! h_status_line_score(zm) ) {
+  if( ! h_status_line_score(m) ) {
     return Qnil;
   }
 
-  return INT2NUM(read_word( zm, h_global_table(zm) + 2 ));
+  return INT2NUM(read_word( m, h_global_table(m) + 2 ));
 }
 
 VALUE status_turns( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+  VALUE memory = rb_iv_get( self, "@memory" );
+  zmemory *m;
 
-  Data_Get_Struct( machine, zmachine, zm );
+  Data_Get_Struct( memory, zmemory, m );
 
-  if( h_version(zm) > 3 ) {
+  if( h_version(m) > 3 ) {
     return Qnil;
   }
 
-  if( ! h_status_line_score(zm) ) {
+  if( ! h_status_line_score(m) ) {
     return Qnil;
   }
 
-  return INT2NUM(read_word( zm, h_global_table(zm) + 4 ));
+  return INT2NUM(read_word( m, h_global_table(m) + 4 ));
 }
 
 VALUE status_hours( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+  VALUE memory = rb_iv_get( self, "@memory" );
+  zmemory *m;
 
-  Data_Get_Struct( machine, zmachine, zm );
+  Data_Get_Struct( memory, zmemory, m );
 
-  if( h_version(zm) > 3 ) {
+  if( h_version(m) > 3 ) {
     return Qnil;
   }
 
-  if( ! h_status_line_time(zm) ) {
+  if( ! h_status_line_time(m) ) {
     return Qnil;
   }
 
-  return INT2NUM(read_word( zm, h_global_table(zm) + 2 ));
+  return INT2NUM(read_word( m, h_global_table(m) + 2 ));
 }
 
 VALUE status_minutes( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+  VALUE memory = rb_iv_get( self, "@memory" );
+  zmemory *m;
 
-  Data_Get_Struct( machine, zmachine, zm );
+  Data_Get_Struct( memory, zmemory, m );
 
-  if( h_version(zm) > 3 ) {
+  if( h_version(m) > 3 ) {
     return Qnil;
   }
 
-  if( ! h_status_line_time(zm) ) {
+  if( ! h_status_line_time(m) ) {
     return Qnil;
   }
 
-  return INT2NUM(read_word( zm, h_global_table(zm) + 4 ));
+  return INT2NUM(read_word( m, h_global_table(m) + 4 ));
 }
 
-VALUE status_location_number( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
+VALUE status_location( VALUE self ) {
+  VALUE memory = rb_iv_get( self, "@memory" );
+  VALUE number;
+  zmemory *m;
 
-  Data_Get_Struct( machine, zmachine, zm );
+  Data_Get_Struct( memory, zmemory, m );
 
-  if( h_version(zm) > 3 ) {
+  if( h_version(m) > 3 ) {
     return Qnil;
   }
 
-  return UINT2NUM(read_word( zm, h_global_table(zm) ));
-}
+  number = UINT2NUM(read_word( m, h_global_table(m) ));
 
-VALUE status_location_name( VALUE self ) {
-  VALUE machine = rb_iv_get( self, "@machine" );
-  zmachine *zm;
-  zaddr naddr;
-  zword n;
-
-  Data_Get_Struct( machine, zmachine, zm );
-
-  if( h_version(zm) > 3 ) {
-    return Qnil;
-  }
-
-  n = read_word( zm, h_global_table(zm) );
-
-  naddr = obj_name_addr( zm, n ) + 1; /* skip the size byte */
-
-  return machine_read_string( zm->self, LONG2NUM((long) naddr) );
+  return object_table_find( self, number );
 }
 

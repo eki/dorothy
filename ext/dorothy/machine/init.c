@@ -48,8 +48,7 @@ void Init_machine() {
   rb_define_method( Status, "turns", status_turns, 0 );
   rb_define_method( Status, "hours", status_hours, 0 );
   rb_define_method( Status, "minutes", status_minutes, 0 );
-  rb_define_method( Status, "location_number", status_location_number, 0 );
-  rb_define_method( Status, "location_name", status_location_name, 0 );
+  rb_define_method( Status, "location", status_location, 0 );
 
   Header = rb_define_class_under( Z, "Header", rb_cObject );
 

@@ -3,12 +3,12 @@
 
 
 /*
- *  Allocate memory for a Machine.
+ *  Allocate Z::Memory.
  */
 
 VALUE memory_alloc( VALUE klass ) {
   zmemory *m = ALLOC( zmemory );
-  VALUE obj = Data_Wrap_Struct( klass, memory_mark, memory_free, m );
+  return Data_Wrap_Struct( klass, memory_mark, memory_free, m );
 }
 
 /*
@@ -81,6 +81,8 @@ VALUE memory_initialize( VALUE self, VALUE filename ) {
   if( h_version(m) <= 3 ) {
     rb_iv_set( self, "@status", rb_funcall( Status, id_new, 1, self ) );
   }
+
+  return self;
 }
 
 /*
@@ -398,7 +400,6 @@ VALUE memory_read_string( VALUE self, VALUE a ) {
   Data_Get_Struct( self, zmemory, m );
 
   long addr = NUM2LONG(a);
-  int limit;
 
   int version = h_version( m );
   zaddr abbreviations = h_abbreviations_table( m );

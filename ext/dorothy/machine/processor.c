@@ -57,10 +57,10 @@ bool p_step( zmachine *zm ) {
     if( h_version(zm) != V6 ) {
       zm->pcp = zm->m->m_static + h_initial_program_counter(zm) -
                 zm->m->dynamic_length;
-      trace( zm, "first step (pc:%d)\n", PC(zm) );
+      trace( zm, "first step (pc:%ld)\n", PC(zm) );
     } 
     else {
-      p_call( zm, h_start_pc(zm), 0, NULL, 0 );
+      p_call( zm, h_main_routine(zm), 0, NULL, 0 );
       return false;
     }
   }

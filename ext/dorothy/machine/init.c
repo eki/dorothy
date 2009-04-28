@@ -40,6 +40,7 @@ void Init_machine() {
   rb_define_method( Object, "parent", object_parent, 0 );
   rb_define_method( Object, "child", object_child, 0 );
   rb_define_method( Object, "sibling", object_sibling, 0 );
+  rb_define_method( Object, "attributes", object_attributes, 0 );
 
   Status = rb_define_class_under( Z, "Status", rb_cObject );
   rb_define_method( Status, "type", status_type, 0 );

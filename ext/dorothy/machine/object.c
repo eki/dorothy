@@ -74,3 +74,21 @@ VALUE object_sibling( VALUE self ) {
   return rb_funcall( Object, id_new, 2, memory, UINT2NUM(o) );
 }
 
+VALUE object_attributes( VALUE self ) {
+  int n = NUM2UINT(rb_iv_get( self, "@number" ));
+  int i;
+  VALUE memory = rb_iv_get( self, "@memory" );
+  VALUE ary = rb_ary_new();
+
+  zmemory *m;
+  Data_Get_Struct( memory, zmemory, m );
+
+  for( i = 0; i <= obj_max_attr( m ); i++ ) {
+    if( obj_attr( m, n, i ) ) {
+      rb_ary_push( ary, INT2NUM(i) );
+    }
+  }
+  
+  return ary;
+}
+

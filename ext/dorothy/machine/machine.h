@@ -60,6 +60,7 @@ VALUE object_name( VALUE self );
 VALUE object_parent( VALUE self );
 VALUE object_child( VALUE self );
 VALUE object_sibling( VALUE self );
+VALUE object_attributes( VALUE self );
 
 VALUE status_type( VALUE self );
 VALUE status_score( VALUE self );

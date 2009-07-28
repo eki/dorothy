@@ -1,6 +1,42 @@
 
 #include "machine.h"
 
+/* Global variable definitions */
+
+VALUE Z;
+VALUE Machine;
+VALUE Memory;
+VALUE Header;
+VALUE ObjectTable;
+VALUE Object;
+VALUE Status;
+VALUE Dictionary;
+VALUE Entry;
+VALUE InputStream;
+VALUE Program;
+VALUE RuntimeError;
+VALUE RandomNumberGenerator;
+
+ID id_new, id_dup, id_srand, id_rand,
+       id_line_available, id_char_available, id_read_line, id_read_char,
+       id_dictionary, id_parse,
+       id_score, id_time;
+
+VALUE sym_score, sym_time;
+
+z_op op0_opcodes[0x10];
+z_op op1_opcodes[0x10];
+z_op var_opcodes[0x40];
+z_op ext_opcodes[0x1d];
+
+char* op0_opcode_names[0x10];
+char* op1_opcode_names[0x10];
+char* var_opcode_names[0x40];
+char* ext_opcode_names[0x1d];
+
+
+/* Initialize extension */
+
 void Init_machine() {
   Z = rb_define_module( "Z" );
 

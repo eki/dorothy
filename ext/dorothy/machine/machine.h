@@ -7,19 +7,19 @@
 
 /* Classes */
 
-VALUE Z;
-VALUE Machine;
-VALUE Memory;
-VALUE Header;
-VALUE ObjectTable;
-VALUE Object;
-VALUE Status;
-VALUE Dictionary;
-VALUE Entry;
-VALUE InputStream;
-VALUE Program;
-VALUE RuntimeError;
-VALUE RandomNumberGenerator;
+extern VALUE Z;
+extern VALUE Machine;
+extern VALUE Memory;
+extern VALUE Header;
+extern VALUE ObjectTable;
+extern VALUE Object;
+extern VALUE Status;
+extern VALUE Dictionary;
+extern VALUE Entry;
+extern VALUE InputStream;
+extern VALUE Program;
+extern VALUE RuntimeError;
+extern VALUE RandomNumberGenerator;
 
 
 /* Prototypes */
@@ -189,12 +189,12 @@ VALUE header_set_standard_minor( VALUE self, VALUE n );
 
 VALUE dictionary_load( VALUE self );
 
-ID id_new, id_dup, id_srand, id_rand,
-   id_line_available, id_char_available, id_read_line, id_read_char,
-   id_dictionary, id_parse,
-   id_score, id_time;
+extern ID id_new, id_dup, id_srand, id_rand,
+       id_line_available, id_char_available, id_read_line, id_read_char,
+       id_dictionary, id_parse,
+       id_score, id_time;
 
-VALUE sym_score, sym_time;
+extern VALUE sym_score, sym_time;
 
 
 /*** Ruby 1.9 and 1.8 compatibility ***/
@@ -807,13 +807,13 @@ void z_verify( zmachine * );
 void z_window_size( zmachine * );
 void z_window_style( zmachine * );
 
-z_op op0_opcodes[0x10];
-z_op op1_opcodes[0x10];
-z_op var_opcodes[0x40];
-z_op ext_opcodes[0x1d];
+extern z_op op0_opcodes[0x10];
+extern z_op op1_opcodes[0x10];
+extern z_op var_opcodes[0x40];
+extern z_op ext_opcodes[0x1d];
 
-char* op0_opcode_names[0x10];
-char* op1_opcode_names[0x10];
-char* var_opcode_names[0x40];
-char* ext_opcode_names[0x1d];
+extern char* op0_opcode_names[0x10];
+extern char* op1_opcode_names[0x10];
+extern char* var_opcode_names[0x40];
+extern char* ext_opcode_names[0x1d];
 

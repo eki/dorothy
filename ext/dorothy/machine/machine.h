@@ -41,6 +41,7 @@ VALUE machine_alloc( VALUE klass );
 VALUE machine_initialize( VALUE self, VALUE filename );
 VALUE machine_step( VALUE self );
 VALUE machine_finished( VALUE self );
+VALUE machine_pc( VALUE self );
 VALUE machine_marshal_dump( VALUE self );
 VALUE machine_marshal_load( VALUE self, VALUE ary );
 void  machine_free( void * );

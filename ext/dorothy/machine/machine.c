@@ -108,7 +108,7 @@ VALUE machine_marshal_dump( VALUE self ) {
   rb_ary_push( ary, UINT2NUM(zm->frame_count) );
   rb_ary_push( ary, UINT2NUM(zm->finished) );
 
-  return self;
+  return ary;
 }
 
 /*
@@ -196,5 +196,17 @@ VALUE machine_finished( VALUE self ) {
   Data_Get_Struct( self, zmachine, zm );
 
   return zm->finished >= 9999 ? Qtrue : Qfalse;
+}
+
+/*
+ *  What is the PC?
+ */
+
+VALUE machine_pc( VALUE self ) {
+  zmachine *zm;
+
+  Data_Get_Struct( self, zmachine, zm );
+
+  return UINT2NUM( PC(zm) );
 }
 

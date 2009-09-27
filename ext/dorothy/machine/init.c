@@ -56,6 +56,7 @@ void Init_machine() {
   rb_define_method( Machine, "initialize", machine_initialize, 1 );
   rb_define_method( Machine, "step", machine_step, 0 );
   rb_define_method( Machine, "finished?", machine_finished, 0 );
+  rb_define_method( Machine, "pc", machine_pc, 0 );
   rb_define_method( Machine, "marshal_dump", machine_marshal_dump, 0 );
   rb_define_method( Machine, "marshal_load", machine_marshal_load, 1 );
 

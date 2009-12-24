@@ -37,7 +37,7 @@ class Z::Machine
     end
 
     def char_available?
-      @str.length > 1
+      @str.length > 0
     end
 
     def read_line( max=nil )
@@ -55,7 +55,8 @@ class Z::Machine
     end
 
     def read_char
-      @str.slice!( 0, 1 )[0]
+      c = @str.slice!( 0, 1 )
+      c.respond_to?( :ord ) ? c.ord : c[0]
     end
 
     def _dump( depth=-1 )

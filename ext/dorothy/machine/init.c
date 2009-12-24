@@ -19,9 +19,10 @@ VALUE RuntimeError;
 VALUE RandomNumberGenerator;
 
 ID id_new, id_dup, id_srand, id_rand, id_append_op,
-       id_line_available, id_char_available, id_read_line, id_read_char,
-       id_dictionary, id_parse,
-       id_score, id_time;
+   id_set_foreground, id_set_background, id_set_window, id_set_style, id_split,
+   id_line_available, id_char_available, id_read_line, id_read_char,
+   id_dictionary, id_parse,
+   id_score, id_time;
 
 VALUE sym_score, sym_time;
 
@@ -288,6 +289,11 @@ void Init_machine() {
   id_srand = rb_intern( "srand" );
   id_rand = rb_intern( "rand" );
   id_append_op = rb_intern( "<<" );
+  id_set_foreground = rb_intern( "foreground=" );
+  id_set_background = rb_intern( "background=" );
+  id_set_window = rb_intern( "window=" );
+  id_set_style = rb_intern( "style=" );
+  id_split = rb_intern( "split" );
   id_line_available = rb_intern( "line_available?" );
   id_char_available = rb_intern( "char_available?" );
   id_read_line = rb_intern( "read_line" );

@@ -12,20 +12,8 @@ void z_draw_picture( zmachine *zm ) {
   runtime_error( "z_draw_picture is not yet implemented!" );
 }
 
-void z_erase_line( zmachine *zm ) {
-  runtime_error( "z_erase_line is not yet implemented!" );
-}
-
 void z_erase_picture( zmachine *zm ) {
   runtime_error( "z_erase_picture is not yet implemented!" );
-}
-
-void z_erase_window( zmachine *zm ) {
-  runtime_error( "z_erase_window is not yet implemented!" );
-}
-
-void z_get_cursor( zmachine *zm ) {
-  runtime_error( "z_get_cursor is not yet implemented!" );
 }
 
 void z_get_wind_prop( zmachine *zm ) {
@@ -90,32 +78,14 @@ void z_scroll_window( zmachine *zm ) {
   runtime_error( "z_scroll_window is not yet implemented!" );
 }
 
-void z_set_font( zmachine *zm ) {
-}
-
-void z_set_colour( zmachine *zm ) {
-}
-
-void z_set_cursor( zmachine *zm ) {
-}
-
 void z_set_margins( zmachine *zm ) {
   runtime_error( "z_set_margins is not yet implemented!" );
-}
-
-void z_set_window( zmachine *zm ) {
-}
-
-void z_set_text_style( zmachine *zm ) {
 }
 
 void z_show_status( zmachine *zm ) {
 }
 
 void z_sound_effect( zmachine *zm ) {
-}
-
-void z_split_window( zmachine *zm ) {
 }
 
 void z_window_size( zmachine *zm ) {

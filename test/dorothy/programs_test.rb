@@ -60,15 +60,15 @@ class TestPrograms < Test::Unit::TestCase
   
     begin 
       until m.finished? 
-        m.step while m.output.empty? && ! m.finished?
+        m.step while m.screen.window.output.empty? && ! m.finished?
 
-        while s = m.output.shift
+        while s = m.screen.window.output.shift
 
           assert( i < expected_output.length, "unexpected output #{s}, " +
                   "only expecting #{expected_output.length} tokens.  " +
                   "Trace: \n#{m.trace.join}" )
 
-          assert_equal( expected_output[i], s, 
+          assert_equal( expected_output[i], s.to_s, 
                         "output (token #{i}) doesn't match expected.  " +
                         "Trace: \n#{m.trace.join}" )
 

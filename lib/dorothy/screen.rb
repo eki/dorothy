@@ -255,6 +255,10 @@ class Z::Screen
     def to_html
       %Q(<span class="#{classes}">#{to_s}</span>)
     end
+
+    def inspect
+      @string.inspect
+    end
   end
 
 end

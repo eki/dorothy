@@ -17,6 +17,7 @@ extern VALUE Status;
 extern VALUE Dictionary;
 extern VALUE Entry;
 extern VALUE InputStream;
+extern VALUE Screen;
 extern VALUE Program;
 extern VALUE RuntimeError;
 extern VALUE RandomNumberGenerator;
@@ -190,7 +191,7 @@ VALUE header_set_standard_minor( VALUE self, VALUE n );
 
 VALUE dictionary_load( VALUE self );
 
-extern ID id_new, id_dup, id_srand, id_rand,
+extern ID id_new, id_dup, id_srand, id_rand, id_append_op,
        id_line_available, id_char_available, id_read_line, id_read_char,
        id_dictionary, id_parse,
        id_score, id_time;
@@ -386,10 +387,10 @@ extern VALUE sym_score, sym_time;
 
 #define PC(zm) (zm->pcp - zm->m->m_static + zm->m->dynamic_length)
 
-#define m_output(zm) (rb_iv_get( zm->self, "@output" ))
+#define m_output(zm) (rb_iv_get( zm->self, "@screen" ))
 #define print_cstr(zm,str) \
-  (rb_ary_push( m_output( zm ), rb_str_new2( (char *)str ) ))
-#define print_rstr(zm,str) (rb_ary_push( m_output( zm ), str ))
+  (rb_funcall( m_output( zm ), id_append_op, 1, rb_str_new2( (char *)str ) ))
+#define print_rstr(zm,str) (rb_funcall( m_output( zm ), id_append_op, 1, str ))
 
 #define m_trace(zm) (rb_iv_get( zm->self, "@trace" ))
 #define trace(zm,fmt,...)  \

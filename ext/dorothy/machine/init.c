@@ -13,11 +13,12 @@ VALUE Status;
 VALUE Dictionary;
 VALUE Entry;
 VALUE InputStream;
+VALUE Screen;
 VALUE Program;
 VALUE RuntimeError;
 VALUE RandomNumberGenerator;
 
-ID id_new, id_dup, id_srand, id_rand,
+ID id_new, id_dup, id_srand, id_rand, id_append_op,
        id_line_available, id_char_available, id_read_line, id_read_char,
        id_dictionary, id_parse,
        id_score, id_time;
@@ -276,6 +277,8 @@ void Init_machine() {
 
   InputStream = rb_define_class_under( Machine, "InputStream", rb_cObject );
 
+  Screen = rb_define_class_under( Z, "Screen", rb_cObject );
+
   RandomNumberGenerator = rb_define_class( "RandomNumberGenerator", rb_cObject);
 
   RuntimeError = rb_define_class_under( Z, "RuntimeError", rb_eRuntimeError );
@@ -284,6 +287,7 @@ void Init_machine() {
   id_dup = rb_intern( "dup" );
   id_srand = rb_intern( "srand" );
   id_rand = rb_intern( "rand" );
+  id_append_op = rb_intern( "<<" );
   id_line_available = rb_intern( "line_available?" );
   id_char_available = rb_intern( "char_available?" );
   id_read_line = rb_intern( "read_line" );

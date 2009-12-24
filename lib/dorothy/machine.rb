@@ -1,7 +1,7 @@
 
 class Z::Machine
 
-  attr_reader :memory, :program, :output, :trace, :keyboard, :status
+  attr_reader :memory, :program, :screen, :trace, :keyboard, :status
 
   def run
     loop do

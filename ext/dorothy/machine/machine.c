@@ -51,7 +51,7 @@ VALUE machine_initialize( VALUE self, VALUE program ) {
   rb_iv_set( self, "@program", program );
   rb_iv_set( self, "@memory", memory );
 
-  rb_iv_set( self, "@output", rb_ary_new() );
+  rb_iv_set( self, "@screen", rb_funcall( Screen, id_new, 1, self ) );
 
   rb_iv_set( self, "@keyboard",
     rb_funcall( InputStream, id_new, 1, UINT2NUM(0) ) );

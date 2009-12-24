@@ -3,7 +3,9 @@ class Z::Screen
   attr_reader   :style, :window, :upper, :lower
   attr_accessor :width, :height
 
-  def initialize
+  def initialize( zmachine )
+    @zmachine = zmachine
+
     @width, @height = 80, 40
 
     self.style = :normal

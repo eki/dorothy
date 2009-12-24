@@ -69,10 +69,12 @@ bool p_step( zmachine *zm ) {
   }
 
   if( *zm->pcp == 228 && ! line_available(zm) ) {
+    trace( zm, "No line available for z_read!" );
     return false;    /* z_read, but a full line of input is not available */
   }
 
   if( *zm->pcp == 246 && ! char_available(zm) ) {
+    trace( zm, "No char available for z_read_char!" );
     return false;    /* z_read_char, but no char available */
   }
 

@@ -1,3 +1,7 @@
+! Note that, due to an apparent bug in Inform 6.30+, we can't
+! dereference objects directly in v3 code. So statements like:
+! print Foo.bar
+! produce an error when targeting v3.
 
 Property bar 11;
 Property baz 12;
@@ -10,13 +14,17 @@ Object Foo "Foo"
 
 [main x;
   print (name) Foo;
-  print Foo.bar;
+  
+  @get_prop Foo bar -> x;
+  @print_num x;
 
   @get_prop_addr Foo bar -> x;
   @storew x 0 7;
-  print Foo.bar;
+  @get_prop Foo bar -> x;
+  @print_num x;
 
-  print (string) Foo.baz;
+  @get_prop Foo baz -> x;
+  print (string) x;
 
   @get_prop_addr Foo bar -> x;
   @get_prop_len x -> x;

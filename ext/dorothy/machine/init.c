@@ -52,6 +52,8 @@ void Init_machine() {
   rb_define_method( Memory, "read_byte", memory_read_byte, 1 );
   rb_define_method( Memory, "read_word", memory_read_word, 1 );
   rb_define_method( Memory, "read_string", memory_read_string, 1 );
+  rb_define_method( Memory, "_dump_data", memory_dump_data, 0 );
+  rb_define_method( Memory, "_load_data", memory_load_data, 1 );
 
   Machine = rb_define_class_under( Z, "Machine", rb_cObject );
   rb_define_alloc_func( Machine, machine_alloc );

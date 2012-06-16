@@ -499,3 +499,66 @@ VALUE memory_read_string( VALUE self, VALUE a ) {
   return str;
 }
 
+/*
+ * Dump this object's data to an array.
+ */
+VALUE memory_dump_data( VALUE self ) {
+    VALUE ary = rb_ary_new();
+    VALUE dynamic_mem = rb_ary_new();
+    VALUE static_mem = rb_ary_new();
+    long i;
+    
+    zmemory *m;
+    Data_Get_Struct( self, zmemory, m );
+
+    rb_ary_push( ary, UINT2NUM(m->length) );
+    rb_ary_push( ary, UINT2NUM(m->static_length) );
+    rb_ary_push( ary, UINT2NUM(m->dynamic_length) );
+
+    for( i = 0; i < m->static_length; i++ ) {
+      rb_ary_push( static_mem, UINT2NUM(m->m_static[i]) );
+    }
+
+    rb_ary_push( ary, static_mem );
+    
+    for( i = 0; i < m->dynamic_length; i++ ) {
+      rb_ary_push( dynamic_mem, UINT2NUM(m->m_dynamic[i]) );
+    }
+
+    rb_ary_push( ary, dynamic_mem );
+    
+    return ary;
+}
+
+/*
+ * Reconstitute this object from an array constructed by memory_dump_data.
+ */
+VALUE memory_load_data( VALUE self, VALUE ary ) {
+    zmemory *m;
+    long i;
+    Data_Get_Struct( self, zmemory, m );
+    
+    m->self = self;
+    m->parent = 0;
+    m->children = 0;
+    m->m = m;
+    
+    m->length = NUM2UINT( rb_ary_entry( ary, 0 ) );
+    m->static_length = NUM2UINT( rb_ary_entry( ary, 1 ) );
+    m->dynamic_length = NUM2UINT( rb_ary_entry( ary, 2 ) );
+    
+    VALUE static_mem = rb_ary_entry( ary, 3 );
+    VALUE dynamic_mem = rb_ary_entry( ary, 4 );
+
+    m->m_static = ALLOC_N( zbyte, m->static_length );
+    for( i = 0; i < m->static_length; i++ ) {
+        m->m_static[i] = NUM2UINT( rb_ary_entry( static_mem, i ) );
+    }
+    
+    m->m_dynamic = ALLOC_N( zbyte, m->dynamic_length );
+    for( i = 0; i < m->dynamic_length; i++ ) {
+        m->m_dynamic[i] = NUM2UINT( rb_ary_entry( dynamic_mem, i ) );
+    }
+    
+    return self;
+}

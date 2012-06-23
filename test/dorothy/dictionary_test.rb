@@ -9,7 +9,7 @@ class TestDictionary < Test::Unit::TestCase
   M = ZP.memory
 
   def test_addr
-    assert_equal( 1317, M.dictionary.addr )   # bad to hardcode!
+    assert_equal( M.header.dictionary, M.dictionary.addr )
   end
 
   def test_entry_length
@@ -53,7 +53,7 @@ class TestDictionary < Test::Unit::TestCase
     assert( rs[1][0] == 0 )   # not in dictionary
     assert( rs[2][0] != 0 )
 
-    assert_equal( [1333, 0, 1324], rs.map { |r| r[0] } )  # hardcoded addr!!
+    assert_equal( [1335, 0, 1326], rs.map { |r| r[0] } )  # hardcoded addr!!
   end
 
   def test_cached

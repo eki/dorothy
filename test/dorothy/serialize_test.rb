@@ -30,5 +30,14 @@ class TestSerialize < Test::Unit::TestCase
     assert_equal( n, zm2.pc )
   end
 
+  def test_memory
+    zm = Z::Machine.new( ZP )
+    s = Marshal.dump( zm )
+    zm2 = Marshal.load( s )
+    
+    assert_equal( zm.memory._dump_data, zm2.memory._dump_data )
+    assert_equal( zm.program.memory._dump_data, zm2.program.memory._dump_data )
+  end
+  
 end
 

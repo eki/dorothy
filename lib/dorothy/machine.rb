@@ -21,6 +21,14 @@ class Z::Machine
     status? && status.type == :time
   end
 
+  def output
+    if (screen && screen.window && screen.window.output)
+      screen.window.output
+    else
+      []
+    end
+  end
+  
   class InputStream
     attr_reader :id
 

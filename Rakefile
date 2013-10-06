@@ -1,6 +1,6 @@
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+#require 'rake/rdoctask'
 require 'rake/clean'
 require 'fileutils'
 include FileUtils
@@ -16,12 +16,12 @@ CLOBBER.include( 'pkg', 'doc/api', 'lib/dorothy/version.rb' )
 ### rdoc task
 ###
 
-Rake::RDocTask.new do |rd|
-  rd.main = "README"
-  rd.rdoc_dir = "doc/api"
-  rd.rdoc_files.include( "README", "COPYING", "lib/**/*.rb", 
-                         "ext/**/*.h", "ext/**/*.c" )
-end
+#Rake::RDocTask.new do |rd|
+#  rd.main = "README"
+#  rd.rdoc_dir = "doc/api"
+#  rd.rdoc_files.include( "README", "COPYING", "lib/**/*.rb", 
+#                         "ext/**/*.h", "ext/**/*.c" )
+#end
 
 ###
 ### task to compile the extension

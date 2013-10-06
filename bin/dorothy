@@ -1,21 +1,171 @@
 #!/usr/bin/env ruby
 
 require 'dorothy'
+require 'sinatra'
+require 'oj'
 
-if ARGV.first
+unless ARGV.first
+  puts "Please pass a filename, for example:  dorothy minizork.z3"
+  exit
+end
 
-  m = Z::Machine.new( ARGV.first )
+def h( machine )
+  machine.screen.lower.remove_prompt
+  machine.screen.lower.to_html
+end
 
-  until m.finished?
-    if ! m.step
-      m.keyboard << $stdin.gets
-    end
+filename = ARGV.first
 
-    until m.output.empty?
-      print m.output
-      m.output.clear
-    end
-  end
+m = Z::Machine.new( filename )
+m.run
+
+initial_output = h( m )
+
+m.screen.clear
+
+post '/' do
+  m.keyboard << params['input'] << "\n"
+  m.run
+
+  output = h( m )
+  u_output, u_height = m.screen.upper.to_html, m.screen.upper.height
+
+  m.screen.clear
+
+  Oj.dump( {
+    lower: { html: output },
+    upper: { html: u_output, height: u_height }
+  }, mode: :compat )
+end
+
+get '/' do
+  jquery = "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"
+
+  %Q(
+
+    <html>
+      <head>
+        <title>#{filename}</title>
+        <script src="#{jquery}"></script>
+        <script>
+          (function( $ ) {
+            function update( data ) {
+              console.log( 'update', data );
+
+              var $lower = $('.screen .lower');
+
+              $lower.append( data.lower.html );
+              $lower.animate( { scrollTop: $lower[0].scrollHeight } );
+              $('.focus').focus();
+            }
+
+            function do_input() {
+              var $form = $('.input form');
+              
+              $.post( '/', $form.serialize(), update, 'json' );
+
+              $form[0].reset();
+
+              return false;
+            }
+
+            function do_focus() {
+              $('.input').addClass( 'focused' );
+            }
+
+            function do_blur() {
+              $('.input').removeClass( 'focused' );
+            }
+
+            $(document).ready( function() {
+              $('body').on( 'submit', '.input form', do_input ).
+                on( 'focus', '.input input[type=text]', do_focus ).
+                on( 'blur', '.input input[type=text]', do_blur );
+              
+              $('.focus').focus();
+            } );
+          })( jQuery  );
+        </script>
+
+        <style>
+          * { box-sizing: border-box }
+
+          body {
+            background-color: #58351a;
+            font-size: 16px;
+            font-family: helvetica, sans serif;
+          }
+
+          .screen {
+            position: relative;
+            width: 80ex;
+            height: 70%;
+            margin: 2em auto;
+            background-color: #f7f7f7;
+            color: #2e221f;
+            border: 1px solid #382313;
+            border-radius: 12px 0px 12px 0px;
+            overflow: hidden;
+            -webkit-box-shadow: 2px 2px 6px 6px rgba(46, 34, 31, 0.2);
+            box-shadow: 2px 2px 6px 6px rgba(46, 34, 31, 0.2);
+          }
+
+          .lower {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 42px;
+            border-bottom: 1px solid #382313;
+            padding: 8px;
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+
+          .input {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            height: 40px;
+            overflow: hidden;
+            border-top: 1px solid #382313;
+            padding: 8px;
+          }
+
+          .input input[type=text] {
+            width: 90%;
+            background-color: transparent;
+            border: 0px;
+            font-size: 16px;
+            height: 24px;
+          }
+
+          .input input[type=text]:focus {
+            outline: none;
+          }
+
+          .input.focused {
+            background-color: #f1eed9;
+          }
+          
+        </style>
+      </head>
+      <body>
+        <div class="screen">
+          <div class="upper"></div>
+          <div class="lower">#{initial_output}</div>
+
+          <div class="input">
+            <form method="post" action="/">
+              <span class="prompt">&gt;</span>
+              <input type="text" name="input" class="focus" value="" />
+            </form>
+          </div>
+        </div>
+      </body>
+    </html>
+  )
 
 end
 

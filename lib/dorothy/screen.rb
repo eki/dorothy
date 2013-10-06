@@ -171,7 +171,7 @@ class Z::Screen
         i += 1
       end
 
-      texts << Text.new( s, last_style, *last_colors )
+      texts << Text.new( s, last_style, *last_colors )  unless s.empty?
       texts.map { |t| t.to_html }.join
     end
   end
@@ -198,11 +198,17 @@ class Z::Screen
       self
     end
 
+    def remove_prompt
+      if output.last.string =~ /\A\s*>\s*\Z/
+        output.pop
+      end
+    end
+
     def to_s
       output.map { |t| t.to_s }.join
     end
 
-    def to_html
+    def to_html( opts={} )
       output.map { |t| t.to_html }.join
     end
   end
@@ -245,7 +251,7 @@ class Z::Screen
     end
 
     def to_s
-      @string
+      @string.to_s
     end
 
     def classes
@@ -253,7 +259,9 @@ class Z::Screen
     end
 
     def to_html
-      %Q(<span class="#{classes}">#{to_s}</span>)
+      s = to_s.gsub( /\n/, '<br />' )
+
+      %Q(<span class="#{classes}">#{s}</span>)
     end
 
     def inspect

@@ -68,7 +68,7 @@ class TestPrograms < Test::Unit::TestCase
                   "only expecting #{expected_output.length} tokens.  " +
                   "Trace: \n#{m.trace.join}" )
 
-          assert_equal( expected_output[i], s.to_s, 
+          assert_equal( expected_output[i].to_s, s.to_s, 
                         "output (token #{i}) doesn't match expected.  " +
                         "Trace: \n#{m.trace.join}" )
 
